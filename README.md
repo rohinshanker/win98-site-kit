@@ -94,5 +94,13 @@ npm run test:ui        # Playwright against showcase/ (npx playwright install ch
 npm run showcase:build # regenerate showcase/ after changing template/ or registry/
 ```
 
-Licenses: the kit is MIT; bundled third-party work is listed in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+## Licensing
+
+The kit's own code is MIT. Some bundled assets are not: the 626 Windows 98
+icons and the hourglass animation are Microsoft artwork that is widely
+redistributed but never formally licensed for reuse, and the Digital-7 clock
+font is free for personal use only. This kit is meant for free, personal,
+non-commercial sites, which those terms allow. For a commercial site, trim
+the icon set and replace the clock font. Everything else (98.css,
+Pixelarticons, Neko sprites, the Solitaire card pack) is open-licensed; the
+full list is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

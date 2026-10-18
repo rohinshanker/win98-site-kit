@@ -1,0 +1,18 @@
+{
+  "id": "sudoku",
+  "kind": "game",
+  "title": "Sudoku",
+  "description": "Sudoku in an Aero aquarium window: six difficulties carved off-thread, pencil marks, conflict and error hints, pause, undo and redo, a clock and local best times.",
+  "version": "1.0.0",
+  "files": [
+    "apps/sudoku/index.js",
+    "apps/sudoku/rules.js",
+    "apps/sudoku/sudoku-generator.worker.js",
+    "apps/sudoku/effects.js",
+    "apps/sudoku/sudoku.css",
+    "assets/sudoku/aqua-aero.webp",
+    "assets/sudoku/ocean-floor.jpg",
+    "assets/sudoku/achievement.png"
+  ],
+  "requires": []
+}

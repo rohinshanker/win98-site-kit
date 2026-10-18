@@ -1,0 +1,29 @@
+{
+  "id": "clash-royale",
+  "kind": "app",
+  "title": "Clash Royale Stats",
+  "description": "Player profile, trophies, current deck with card art and the last 20 battles for any Clash Royale player, via a small optional proxy you deploy with your own API key.",
+  "version": "1.0.0",
+  "files": [
+    "apps/clash-royale/index.js",
+    "apps/clash-royale/api.js",
+    "apps/clash-royale/config.js",
+    "apps/clash-royale/clash-royale.css",
+    "assets/clash-royale/digits/digital_0.png",
+    "assets/clash-royale/digits/digital_1.png",
+    "assets/clash-royale/digits/digital_2.png",
+    "assets/clash-royale/digits/digital_3.png",
+    "assets/clash-royale/digits/digital_4.png",
+    "assets/clash-royale/digits/digital_5.png",
+    "assets/clash-royale/digits/digital_6.png",
+    "assets/clash-royale/digits/digital_7.png",
+    "assets/clash-royale/digits/digital_8.png",
+    "assets/clash-royale/digits/digital_9.png",
+    "assets/clash-royale/digits/digital_minus.png",
+    "proxy/clash-royale/worker.mjs",
+    "proxy/clash-royale/local-proxy.mjs",
+    "proxy/clash-royale/wrangler.jsonc.example",
+    "proxy/clash-royale/README.md"
+  ],
+  "requires": []
+}

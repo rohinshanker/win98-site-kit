@@ -1,0 +1,32 @@
+{
+  "id": "solitaire",
+  "kind": "game",
+  "title": "Solitaire",
+  "description": "Draw-one Klondike with solver-verified winnable deals, undo, an animated auto-solve, fireworks and a victory video.",
+  "version": "1.0.0",
+  "files": [
+    "apps/solitaire/index.js",
+    "apps/solitaire/rules.js",
+    "apps/solitaire/seven-segment.js",
+    "apps/solitaire/solitaire.css",
+    "assets/solitaire/achievement.png",
+    "assets/solitaire/digits/digital_0.png",
+    "assets/solitaire/digits/digital_1.png",
+    "assets/solitaire/digits/digital_2.png",
+    "assets/solitaire/digits/digital_3.png",
+    "assets/solitaire/digits/digital_4.png",
+    "assets/solitaire/digits/digital_5.png",
+    "assets/solitaire/digits/digital_6.png",
+    "assets/solitaire/digits/digital_7.png",
+    "assets/solitaire/digits/digital_8.png",
+    "assets/solitaire/digits/digital_9.png",
+    "assets/solitaire/digits/digital_blank.png",
+    "assets/solitaire/digits/digital_minus.png",
+    "assets/solitaire/hero-parry.mp3",
+    "assets/solitaire/poker nano.png",
+    "assets/solitaire/reset-button.png",
+    "assets/solitaire/undo-button.png",
+    "assets/solitaire/victory-royale.webm"
+  ],
+  "requires": []
+}

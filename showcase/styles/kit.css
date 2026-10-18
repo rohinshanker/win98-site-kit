@@ -266,9 +266,11 @@ body {
 
 /* ---------------------------------------------------------------- windows */
 
+/* No z-index here on purpose: the stack must not form a stacking context, so
+   alerts (z 10000+) can rise above the calendar popout (z 600) while ordinary
+   windows stay below it. */
 .window-stack {
   position: relative;
-  z-index: 2;
 }
 
 .app-window {

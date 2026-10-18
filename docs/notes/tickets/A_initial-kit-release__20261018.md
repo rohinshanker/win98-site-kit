@@ -4,7 +4,7 @@
 - Status: active
 - Opened: 2026-10-18
 - Updated: 2026-10-18
-- Current State: Core modules, template apps, CLI (`init/add/remove/list/sync/serve`), showcase build/check and the writing/creative-work packages are in place with node tests. Game and app ports are being produced as registry packages with their own tests. Remaining: assemble the showcase with every package, run the full gate suite and Playwright at four viewports, push to the private GitHub repository, owner review.
+- Current State: Everything listed in Scope is implemented. Eleven registry packages (snake, minesweeper, solitaire, sudoku, writing, creative-work, study-resources, neko, counter, clash-royale with its optional proxy, components) each carry node tests and a Playwright spec; `npm run check` (syntax, showcase freshness, 188 node tests) and `npm run test:ui` (69 Playwright tests at four viewports) pass; the showcase was inspected at 375×812, 768×1024, 1280×800 and 1440×900 with a clean console. Pushed to the private repository rohinshanker/win98-site-kit. Remaining: owner review of the showcase, then flip the repository public, enable Pages for `/showcase/` and mark it a template.
 - Verification: `npm run check` and `npm run test:ui` pass; every registry package has `tests/packages/<id>.test.mjs` and `tests/ui/<id>.spec.mjs`; showcase inspected at 375×812, 768×1024, 1280×800 and 1440×900 with a clean console.
 - Cleanup: Distill the porting rules and gates into `docs/validation/` (done for package-porting.md and quality-gates.md), then resolve and delete this ticket and its index row after the owner accepts the showcase.
 

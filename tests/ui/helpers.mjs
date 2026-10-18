@@ -35,9 +35,15 @@ export const openSite = async (page, { site = process.env.UI_TEST_SITE || "showc
   };
 };
 
-/** Opens an app window via its desktop icon and waits for it to be visible. */
+/**
+ * Opens an app window and waits for it to be visible. The dock button is
+ * used when the app has one, because open windows can cover desktop icons
+ * on small viewports.
+ */
 export const openApp = async (page, id) => {
-  await page.click(`.desktop-icon[data-app="${id}"]`);
+  const dock = page.locator(`.taskbar-icon[data-app="${id}"]`);
+  if (await dock.count()) await dock.click();
+  else await page.click(`.desktop-icon[data-app="${id}"]`);
   const win = page.locator(`[data-app-window="${id}"]`);
   await expect(win).toBeVisible();
   await expect(win).not.toHaveClass(/is-opening/);

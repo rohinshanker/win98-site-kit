@@ -107,20 +107,22 @@ const titleBarGeometry = (win, windowRect = null) => {
   const titleRect = titleBar.getBoundingClientRect();
   return {
     height: titleRect.height,
-    offsetX: titleRect.left - rect.left,
     offsetY: titleRect.top - rect.top,
-    width: titleRect.width,
+    windowWidth: rect.width,
   };
 };
 
-/** Keeps the whole title bar reachable inside the viewport above the taskbar. */
+/**
+ * Keeps the window horizontally inside the viewport and its title bar
+ * vertically reachable above the taskbar (the body may hang below).
+ */
 const clampTitleBarPosition = (win, left, top, geometry = titleBarGeometry(win)) => {
   if (!geometry) return { left, top };
-  const { height, offsetX, offsetY, width } = geometry;
+  const { height, offsetY, windowWidth } = geometry;
   const viewportRight = window.innerWidth;
   const viewportBottom = window.innerHeight - taskbarClearance();
-  const maxLeft = width > viewportRight ? -offsetX : viewportRight - width - offsetX;
-  const minLeft = width > viewportRight ? viewportRight - width - offsetX : -offsetX;
+  const maxLeft = windowWidth > viewportRight ? 0 : viewportRight - windowWidth;
+  const minLeft = windowWidth > viewportRight ? viewportRight - windowWidth : 0;
   const maxTop = Math.max(-offsetY, viewportBottom - height - offsetY);
   return {
     left: Math.round(clamp(left, minLeft, maxLeft)),
@@ -164,12 +166,20 @@ const setResponsiveState = (win, width, height) => {
   win.classList.toggle("is-window-short", height < 360);
 };
 
+/** Windows flagged alwaysOnTop stack above ordinary windows and the calendar popout. */
+const ALWAYS_ON_TOP_BASE = 10_000;
+
+const windowZIndex = (win) => {
+  const onTop = records.get(win.dataset.appWindow)?.options.alwaysOnTop;
+  return nextZIndex() + (onTop ? ALWAYS_ON_TOP_BASE : 0);
+};
+
 export const bringToFront = (win) => {
   if (!win || win.classList.contains("is-hidden")) return;
   if (activeWindow && activeWindow !== win) pauseMedia(activeWindow);
   activeWindow = win;
   suspendedActiveWindow = null;
-  win.style.zIndex = String(nextZIndex());
+  win.style.zIndex = String(windowZIndex(win));
   win.querySelectorAll("video[data-autoplay-on-active]").forEach(playMedia);
 };
 
@@ -183,6 +193,9 @@ const finishClose = (win) => {
   stopMedia(win);
   win.classList.remove("is-closing");
   win.classList.add("is-hidden");
+  // Fires once the element is actually hidden, whether or not the close
+  // animation ran (reduced motion skips it). Alerts use it to clean up.
+  win.dispatchEvent(new CustomEvent("kit:windowhidden"));
   const focusTarget = focusReturns.get(win);
   focusReturns.delete(win);
   const activeFocus = document.activeElement;
@@ -212,14 +225,18 @@ const placeWindow = (win, options) => {
     }
     return;
   }
-  const paddingX = 24;
-  const paddingY = 24;
-  const maxLeft = Math.max(paddingX, window.innerWidth - win.offsetWidth - paddingX);
-  const maxTop = Math.max(paddingY, window.innerHeight - win.offsetHeight - 90);
+  // A random spot that keeps the whole window inside the viewport; narrow
+  // viewports simply get the window flush against the 8px margin.
+  const margin = 8;
+  const preferredPadding = 24;
+  const maxLeft = window.innerWidth - win.offsetWidth - margin;
+  const maxTop = window.innerHeight - taskbarClearance() - win.offsetHeight - margin;
+  const left = maxLeft <= preferredPadding ? Math.max(margin, maxLeft) : preferredPadding + Math.random() * (maxLeft - preferredPadding);
+  const top = maxTop <= preferredPadding ? Math.max(margin, maxTop) : preferredPadding + Math.random() * (maxTop - preferredPadding);
   win.classList.remove("app-window--center");
   win.style.translate = "0 0";
-  win.style.left = `${Math.round(paddingX + Math.random() * (maxLeft - paddingX))}px`;
-  win.style.top = `${Math.round(paddingY + Math.random() * (maxTop - paddingY))}px`;
+  win.style.left = `${Math.round(left)}px`;
+  win.style.top = `${Math.round(top)}px`;
 };
 
 /** Selects a tab inside a selector window (see kit/selector.js). */
@@ -258,6 +275,7 @@ export const openWindow = (id) => {
   }
   win.classList.remove("is-hidden");
   win.setAttribute("aria-hidden", "false");
+  hooks.onBeforeOpen?.(win);
   resetToFirstTab(win);
   bringToFront(win);
   placeWindow(win, options);
@@ -290,7 +308,7 @@ export const closeWindow = (id) => {
   if (suspendedActiveWindow === win) suspendedActiveWindow = null;
   hooks.onClose?.(win);
   restoreSize(win);
-  win.style.zIndex = String(nextZIndex());
+  win.style.zIndex = String(windowZIndex(win));
   restartAnimation(win, "is-closing");
   if (prefersReducedMotion() || win.getAnimations().length === 0) finishClose(win);
   emitChange(id, false);
@@ -541,10 +559,39 @@ export const createWindow = (definition, context = {}) => {
   });
   initDrag(win, hooks);
   if (options.resizable) initCornerResize(win, hooks);
+  watchWindowGrowth(win);
 
   records.set(id, { element: win, options, hooks, definition });
   definition.mount?.({ ...context, id, window: win, body });
   return win;
+};
+
+/**
+ * Content that grows after opening (players added, a board dealt) must not
+ * push the window under the taskbar: when a visible, untouched window gets
+ * taller, it moves up as far as needed, and the body scrolls if even the top
+ * margin is not enough.
+ */
+const keepWindowAboveTaskbar = (win) => {
+  if (!isWindowVisible(win)) return;
+  if (win.classList.contains("is-manual-resizing") || document.body.classList.contains("is-dragging-window")) return;
+  if (win.hasAttribute("data-no-drag")) return;
+  const rect = win.getBoundingClientRect();
+  const viewportBottom = window.innerHeight - taskbarClearance();
+  if (rect.bottom <= viewportBottom + 0.5) return;
+  const top = Math.max(8, viewportBottom - rect.height);
+  if (win.classList.contains("app-window--center")) {
+    win.classList.remove("app-window--center");
+    win.style.translate = "0 0";
+    win.style.left = `${Math.round(rect.left)}px`;
+  }
+  win.style.top = `${Math.round(top)}px`;
+};
+
+const watchWindowGrowth = (win) => {
+  if (typeof ResizeObserver !== "function") return;
+  const observer = new ResizeObserver(() => keepWindowAboveTaskbar(win));
+  observer.observe(win);
 };
 
 /** Removes a window and its registration (used for one-off alerts). */

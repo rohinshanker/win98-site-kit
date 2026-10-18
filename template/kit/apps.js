@@ -18,6 +18,7 @@
 //       resizable: true,                 // corner drag resize (selector windows use it)
 //       dialog: true,                    // role=dialog, Escape closes, focus returns to launcher
 //       noDrag: false,                   // fixed position window
+//       alwaysOnTop: false,              // stack above every ordinary window and the calendar (alerts)
 //     },
 //     render: () => "<p>window body HTML</p>",   // string, Node, or DocumentFragment
 //     mount(context) {},                 // once, after the window exists: { window, body, kit, app }
@@ -57,6 +58,7 @@ export const normalizeWindowOptions = (options = {}, appId) => {
     noDrag: Boolean(options.noDrag),
     bodyClassName: options.bodyClassName ?? "",
     bodyTabIndex: options.bodyTabIndex ?? null,
+    alwaysOnTop: Boolean(options.alwaysOnTop),
   });
 };
 

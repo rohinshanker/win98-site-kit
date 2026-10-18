@@ -1,0 +1,1818 @@
+/* Sudoku window: the Aero-style aquarium panel, the loader, the 9x9 grid,
+   the keypad and control panel, pause, prompts and the victory effects. Asset
+   URLs are relative to this file (../../assets/sudoku/). */
+
+.sudoku-window {
+  width: min(94vw, 660px);
+}
+
+.sudoku-window .window-body {
+  background: var(--surface);
+  min-height: 0;
+  padding: 8px;
+}
+
+.sudoku-app {
+  --sudoku-hue: 205;
+  --sudoku-sat: 0.15;
+  --sudoku-cell-size: 40px;
+  --sudoku-grid-line: rgba(0, 94, 154, 0.32);
+  --sudoku-box-line: rgba(0, 47, 102, 0.82);
+  --sudoku-prompt-gold: #ffc21a;
+  background: var(--surface);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  display: grid;
+  gap: 6px;
+  padding: 6px;
+  position: relative;
+}
+
+.sudoku-window.is-sudoku-playing {
+  background: var(--surface);
+  box-shadow: var(--border-window-outer), var(--border-window-inner);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.sudoku-window.is-sudoku-playing .window-body {
+  background: var(--surface);
+}
+
+.sudoku-app.is-sudoku-playing {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.sudoku-aero-panel {
+  background:
+    linear-gradient(rgba(126, 232, 255, 0.16), rgba(0, 91, 180, 0.28)),
+    url("../../assets/sudoku/aqua-aero.webp") center / cover no-repeat,
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.9), transparent 13%),
+    radial-gradient(circle at 82% 18%, rgba(143, 235, 255, 0.68), transparent 19%),
+    radial-gradient(circle at 68% 78%, rgba(33, 190, 242, 0.42), transparent 22%),
+    linear-gradient(180deg, #7dd9ff 0%, #e9fbff 36%, #28b5df 62%, #0581c8 100%);
+  box-shadow:
+    var(--border-sunken-outer),
+    var(--border-sunken-inner),
+    inset 0 0 28px rgba(255, 255, 255, 0.5),
+    inset 0 -18px 42px rgba(0, 92, 176, 0.34);
+  display: grid;
+  gap: 8px;
+  min-height: 418px;
+  overflow: hidden;
+  padding: 11px;
+  position: relative;
+  container-type: inline-size;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-aero-panel {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.34),
+      oklch(82% var(--sudoku-sat) var(--sudoku-hue) / 0.16) 45%,
+      rgba(255, 255, 255, 0.12)
+    ),
+    url("../../assets/sudoku/ocean-floor.jpg") right center / cover no-repeat,
+    rgba(245, 254, 255, 0.1);
+  box-shadow:
+    var(--border-sunken-outer),
+    var(--border-sunken-inner),
+    inset 0 1px 24px rgba(255, 255, 255, 0.36),
+    inset 0 -18px 34px oklch(54% var(--sudoku-sat) var(--sudoku-hue) / 0.08),
+    0 0 0 1px oklch(58% var(--sudoku-sat) var(--sudoku-hue) / 0.38),
+    0 0 16px oklch(72% var(--sudoku-sat) var(--sudoku-hue) / 0.16);
+  padding-right: 19px;
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+}
+
+.sudoku-aquarium-layer {
+  display: none;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-aquarium-layer {
+  display: block;
+}
+
+.sudoku-seabed-layer {
+  bottom: 0;
+  filter: saturate(0.95);
+  height: 152px;
+  inset-inline: 0;
+  opacity: 0.92;
+  position: absolute;
+  z-index: 4;
+}
+
+.sudoku-seabed-layer::before {
+  background:
+    radial-gradient(ellipse at 16% 92%, rgba(255, 229, 172, 0.24), transparent 42%),
+    radial-gradient(ellipse at 78% 88%, rgba(173, 130, 76, 0.18), transparent 48%),
+    linear-gradient(0deg, rgba(246, 218, 166, 0.2), transparent 54%);
+  bottom: 0;
+  content: "";
+  height: 68px;
+  inset-inline: 0;
+  position: absolute;
+}
+
+.sudoku-seabed-item {
+  bottom: var(--bottom, 18px);
+  left: var(--x, 50%);
+  position: absolute;
+  transform: translateX(-50%) scale(var(--scale, 1));
+  transform-origin: 50% 100%;
+}
+
+.sudoku-coral {
+  filter: drop-shadow(0 2px 2px rgba(10, 52, 45, 0.26));
+  opacity: var(--coral-opacity, 0.82);
+}
+
+.sudoku-coral--fan {
+  background:
+    repeating-conic-gradient(
+      from -18deg at 50% 100%,
+      rgba(255, 255, 255, 0.38) 0deg 4deg,
+      transparent 4deg 14deg
+    ),
+    radial-gradient(ellipse at 50% 72%, #ff8ca1 0 28%, #ff536f 57%, #c52a57 100%);
+  border-radius: 72% 72% 12% 12%;
+  clip-path: polygon(50% 100%, 8% 26%, 18% 8%, 38% 0, 61% 3%, 82% 15%, 95% 36%);
+  height: 58px;
+  width: 66px;
+}
+
+.sudoku-coral--fan::after {
+  background:
+    radial-gradient(circle at 28% 36%, rgba(255, 232, 219, 0.42) 0 3px, transparent 4px),
+    radial-gradient(circle at 58% 28%, rgba(255, 232, 219, 0.32) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 54%, rgba(255, 232, 219, 0.28) 0 3px, transparent 4px);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.sudoku-coral--branch {
+  background: linear-gradient(180deg, #ff9b72, #d94145);
+  border-radius: 999px 999px 4px 4px;
+  height: 62px;
+  width: 9px;
+}
+
+.sudoku-coral--branch::before,
+.sudoku-coral--branch::after {
+  background: linear-gradient(180deg, #ffb085, #df4c4e);
+  border-radius: 999px 999px 4px 4px;
+  content: "";
+  position: absolute;
+  transform-origin: 50% 100%;
+  width: 8px;
+}
+
+.sudoku-coral--branch::before {
+  height: 42px;
+  left: -15px;
+  top: 14px;
+  transform: rotate(-34deg);
+}
+
+.sudoku-coral--branch::after {
+  height: 49px;
+  right: -17px;
+  top: 8px;
+  transform: rotate(31deg);
+}
+
+.sudoku-coral--knob {
+  background:
+    radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.3), transparent 26%),
+    radial-gradient(circle at 64% 42%, #f4b245 0 16%, transparent 18%),
+    radial-gradient(circle at 30% 68%, #f6c15a 0 18%, transparent 20%),
+    #c66d24;
+  border-radius: 48% 58% 42% 52%;
+  box-shadow:
+    11px -7px 0 -3px #d9832e,
+    -10px -4px 0 -4px #ec9d43,
+    5px 9px 0 -5px #a95f23;
+  height: 36px;
+  width: 46px;
+}
+
+.sudoku-algae-clump {
+  height: var(--plant-height, 86px);
+  width: var(--plant-width, 72px);
+}
+
+.sudoku-algae-blade {
+  animation: sudoku-algae-sway var(--sway-time, 4.8s) ease-in-out infinite alternate;
+  animation-delay: var(--sway-delay, -1s);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), transparent 38%),
+    linear-gradient(180deg, #78d05d, #23895d 72%, #126147);
+  border-radius: 100% 12% 82% 18%;
+  bottom: 0;
+  box-shadow: inset -1px 0 0 rgba(4, 58, 38, 0.26);
+  height: var(--blade-height, 70px);
+  left: var(--blade-x, 50%);
+  opacity: 0.9;
+  position: absolute;
+  transform: rotate(var(--blade-tilt, 0deg));
+  transform-origin: 50% 100%;
+  width: var(--blade-width, 9px);
+}
+
+.sudoku-algae-blade:nth-child(2n) {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 44%),
+    linear-gradient(180deg, #8edb6e, #2b9b68 70%, #145f45);
+  border-radius: 18% 100% 22% 78%;
+}
+
+@keyframes sudoku-algae-sway {
+  from {
+    transform: rotate(calc(var(--blade-tilt, 0deg) - 4deg)) translateX(-1px);
+  }
+
+  to {
+    transform: rotate(calc(var(--blade-tilt, 0deg) + 5deg)) translateX(2px);
+  }
+}
+
+.sudoku-fish {
+  --fish-body: linear-gradient(90deg, #ff8a2a, #ffd166);
+  --fish-tail: #ffb347;
+  --fish-size: 42px;
+  --fish-opacity: 0.48;
+  --fish-blur: 0.3px;
+  --fish-saturate: 1.1;
+  --fish-start-left: -18%;
+  --fish-end-left: 118%;
+  --fish-dir: 1;
+  --fish-bob: 0px;
+  animation: sudoku-fish-swim var(--fish-duration, 16s) linear var(--fish-delay, 0ms) forwards;
+  filter: blur(var(--fish-blur)) saturate(var(--fish-saturate));
+  height: calc(var(--fish-size) * 0.54);
+  left: var(--fish-start-left);
+  opacity: 0;
+  position: absolute;
+  top: var(--fish-top, 50%);
+  transform: translateY(-50%) scaleX(var(--fish-dir));
+  width: var(--fish-size);
+  will-change: left, opacity, transform;
+}
+
+.sudoku-fish::before {
+  background: var(--fish-tail);
+  clip-path: polygon(100% 50%, 0 0, 24% 50%, 0 100%);
+  content: "";
+  height: 62%;
+  left: 0;
+  position: absolute;
+  top: 19%;
+  width: 31%;
+}
+
+.sudoku-fish::after {
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 60% 40% 60% 40%;
+  content: "";
+  height: 24%;
+  left: 48%;
+  position: absolute;
+  top: 66%;
+  transform: rotate(-14deg);
+  width: 24%;
+}
+
+.sudoku-fish-body {
+  background: var(--fish-body);
+  border-radius: 58% 46% 50% 54%;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.38),
+    inset 0 -2px 4px rgba(0, 26, 54, 0.18);
+  inset: 13% 5% 12% 20%;
+  overflow: hidden;
+  position: absolute;
+}
+
+.sudoku-fish-body::before,
+.sudoku-fish-body::after {
+  content: "";
+  position: absolute;
+}
+
+.sudoku-fish-body::after {
+  background: #06141e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.62);
+  height: 13%;
+  right: 13%;
+  top: 30%;
+  width: 8%;
+}
+
+.sudoku-fish--clown {
+  --fish-body: linear-gradient(90deg, #f36b21, #ffb13b 52%, #f36b21);
+  --fish-tail: #ff8a2a;
+}
+
+.sudoku-fish--clown .sudoku-fish-body::before {
+  background:
+    linear-gradient(90deg, transparent 0 17%, #fff 17% 28%, #17212c 28% 33%, transparent 33% 57%, #fff 57% 69%, #17212c 69% 74%, transparent 74%);
+  inset: 0;
+}
+
+.sudoku-fish--tang {
+  --fish-body: linear-gradient(90deg, #1250c9, #21b7ff 55%, #0c48b3);
+  --fish-tail: #ffe14a;
+}
+
+.sudoku-fish--tang .sudoku-fish-body::before {
+  background:
+    radial-gradient(ellipse at 64% 54%, rgba(7, 23, 76, 0.72) 0 30%, transparent 32%),
+    linear-gradient(120deg, transparent 0 38%, rgba(255, 225, 74, 0.88) 39% 48%, transparent 49%);
+  inset: 0;
+}
+
+.sudoku-fish--butterfly {
+  --fish-body: linear-gradient(90deg, #ffdc51, #fff2a2 58%, #ffb82e);
+  --fish-tail: #ffe670;
+}
+
+.sudoku-fish--butterfly .sudoku-fish-body::before {
+  background:
+    linear-gradient(100deg, transparent 0 28%, rgba(18, 21, 28, 0.82) 29% 36%, transparent 37% 53%, rgba(18, 21, 28, 0.68) 54% 60%, transparent 61%),
+    radial-gradient(circle at 78% 44%, rgba(255, 255, 255, 0.7) 0 13%, transparent 14%);
+  inset: 0;
+}
+
+.sudoku-fish--wrasse {
+  --fish-body: linear-gradient(90deg, #f642a3, #3ce6c6 46%, #5b6dff);
+  --fish-tail: #57f2d1;
+}
+
+.sudoku-fish--wrasse .sudoku-fish-body::before {
+  background:
+    linear-gradient(170deg, transparent 0 44%, rgba(255, 255, 255, 0.62) 45% 51%, transparent 52%),
+    linear-gradient(12deg, transparent 0 50%, rgba(14, 32, 72, 0.36) 51% 57%, transparent 58%);
+  inset: 0;
+}
+
+.sudoku-fish--far {
+  z-index: 1;
+}
+
+.sudoku-fish--mid {
+  z-index: 2;
+}
+
+.sudoku-fish--near {
+  z-index: 3;
+}
+
+@keyframes sudoku-fish-swim {
+  0% {
+    left: var(--fish-start-left);
+    opacity: 0;
+    transform: translateY(calc(-50% + var(--fish-bob))) scaleX(var(--fish-dir)) scale(0.96);
+  }
+
+  10%,
+  88% {
+    opacity: var(--fish-opacity);
+  }
+
+  52% {
+    transform: translateY(calc(-50% - var(--fish-bob))) scaleX(var(--fish-dir)) scale(1.02);
+  }
+
+  100% {
+    left: var(--fish-end-left);
+    opacity: 0;
+    transform: translateY(calc(-50% + var(--fish-bob))) scaleX(var(--fish-dir)) scale(0.98);
+  }
+}
+
+.sudoku-bubble-cluster {
+  animation: sudoku-bubble-rise var(--bubble-duration, 7s) ease-out forwards;
+  bottom: -170px;
+  height: calc(100% + 190px);
+  left: var(--bubble-left, 50%);
+  opacity: 0;
+  position: absolute;
+  transform: translateX(-50%);
+  width: var(--bubble-width, 82px);
+  z-index: 5;
+}
+
+.sudoku-bubble {
+  animation: sudoku-bubble-wobble var(--bubble-wobble, 1800ms) ease-in-out infinite alternate;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92) 0 16%, transparent 18%),
+    radial-gradient(circle at 58% 62%, rgba(255, 255, 255, 0.16), rgba(162, 242, 255, 0.1) 52%, rgba(255, 255, 255, 0.36) 54% 62%, transparent 64%);
+  border: 1px solid rgba(229, 253, 255, 0.72);
+  border-radius: 50%;
+  bottom: var(--bubble-bottom, 0);
+  box-shadow: 0 0 8px rgba(182, 245, 255, 0.34);
+  height: var(--bubble-size, 12px);
+  left: var(--bubble-offset, 50%);
+  position: absolute;
+  width: var(--bubble-size, 12px);
+}
+
+@keyframes sudoku-bubble-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 0, 0) scale(0.9);
+  }
+
+  12%,
+  92% {
+    opacity: var(--bubble-opacity, 0.78);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--bubble-drift, 18px)), -100%, 0) scale(1.08);
+  }
+}
+
+@keyframes sudoku-bubble-wobble {
+  from {
+    translate: -6px 0;
+  }
+
+  to {
+    translate: 7px -4px;
+  }
+}
+
+.sudoku-app:not(.is-sudoku-playing) .sudoku-statusbar {
+  display: none;
+}
+
+.sudoku-game-content {
+  animation: sudoku-game-fade-in 360ms ease-out both;
+  display: grid;
+  grid-template-columns: max-content minmax(168px, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.sudoku-app:not(.is-sudoku-playing) .sudoku-game-content {
+  display: none;
+}
+
+.sudoku-aero-panel::before,
+.sudoku-aero-panel::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.sudoku-aero-panel::before {
+  background:
+    radial-gradient(circle at 15% 72%, rgba(255, 255, 255, 0.55) 0 7px, transparent 8px),
+    radial-gradient(circle at 88% 48%, rgba(255, 255, 255, 0.45) 0 11px, transparent 12px),
+    radial-gradient(circle at 74% 22%, rgba(255, 255, 255, 0.38) 0 5px, transparent 6px),
+    linear-gradient(130deg, transparent 20%, rgba(255, 255, 255, 0.4) 42%, transparent 53%);
+  opacity: 0.7;
+}
+
+.sudoku-aero-panel::after {
+  background:
+    linear-gradient(165deg, transparent 32%, rgba(255, 255, 255, 0.42) 33%, transparent 35%),
+    linear-gradient(155deg, transparent 46%, rgba(0, 142, 214, 0.24) 47%, transparent 50%);
+  opacity: 0.62;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-aero-panel::before {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.18) 0 7px, transparent 8px),
+    radial-gradient(circle at 84% 78%, oklch(82% var(--sudoku-sat) var(--sudoku-hue) / 0.12) 0 12px, transparent 13px),
+    linear-gradient(130deg, transparent 14%, rgba(255, 255, 255, 0.14) 36%, transparent 58%);
+  opacity: 0.34;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-aero-panel::after {
+  background:
+    linear-gradient(160deg, transparent 24%, rgba(255, 255, 255, 0.16) 26%, transparent 32%),
+    linear-gradient(25deg, transparent 58%, oklch(78% var(--sudoku-sat) var(--sudoku-hue) / 0.08) 60%, transparent 70%);
+  opacity: 0.24;
+}
+
+.sudoku-app.is-sudoku-bursting .sudoku-aero-panel::before {
+  opacity: 0.7;
+}
+
+.sudoku-app.is-sudoku-bursting .sudoku-aero-panel::after {
+  opacity: 0.62;
+}
+
+.sudoku-loading-screen {
+  align-items: center;
+  align-content: center;
+  display: grid;
+  gap: 14px;
+  grid-template-rows: auto auto 52px;
+  justify-items: center;
+  min-height: 394px;
+  position: relative;
+  z-index: 1;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-loading-screen {
+  display: none;
+}
+
+@keyframes sudoku-game-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sudoku-loading-text {
+  color: #053f70;
+  font: bold 18px Arial, sans-serif;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.92),
+    0 0 10px rgba(155, 244, 255, 0.72);
+}
+
+.sudoku-loading-dots {
+  display: inline-flex;
+  justify-content: flex-start;
+  width: 18px;
+}
+
+.sudoku-loading-dots span {
+  animation: sudoku-loading-dot 900ms ease-in-out infinite;
+  opacity: 0.18;
+}
+
+.sudoku-loading-dots span:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.sudoku-loading-dots span:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes sudoku-loading-dot {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+
+  45% {
+    opacity: 1;
+  }
+}
+
+.sudoku-loading-meter {
+  background: rgba(225, 251, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px 4px rgba(0, 82, 149, 0.34),
+    0 0 12px rgba(93, 231, 255, 0.45);
+  height: 18px;
+  overflow: hidden;
+  width: min(100%, 312px);
+}
+
+.sudoku-loading-fill {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(120, 239, 255, 0.84) 42%, rgba(0, 143, 220, 0.92) 43%, rgba(200, 253, 255, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 0 10px rgba(0, 223, 255, 0.72);
+  display: block;
+  height: 100%;
+  width: var(--sudoku-load-progress, 0%);
+}
+
+.sudoku-play-button {
+  --sudoku-play-bubble: #16aee8;
+  align-items: center;
+  background:
+    radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.96) 0 10%, transparent 11%),
+    linear-gradient(180deg, #f8ffff, #8cf1ff 44%, #16aee8 45%, #dffcff);
+  border: 1px solid rgba(255, 255, 255, 0.94);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 4px 8px rgba(255, 255, 255, 0.68),
+    inset 0 -8px 12px rgba(0, 98, 184, 0.34),
+    0 0 16px rgba(76, 232, 255, 0.78);
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 48px;
+  height: 48px;
+  isolation: isolate;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  opacity: 0;
+  padding: 0;
+  pointer-events: none;
+  position: relative;
+  transition: opacity 180ms ease, visibility 180ms ease;
+  visibility: hidden;
+  width: 48px;
+}
+
+.sudoku-app.is-sudoku-ready .sudoku-play-button {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.sudoku-app.is-sudoku-bursting .sudoku-play-button {
+  opacity: 1;
+  pointer-events: none;
+  visibility: visible;
+}
+
+.sudoku-play-button:active {
+  transform: scale(0.9);
+  box-shadow:
+    inset 0 4px 8px rgba(255, 255, 255, 0.56),
+    inset 0 -8px 12px rgba(0, 98, 184, 0.38),
+    0 2px 25px rgba(22, 174, 232, 0.22);
+}
+
+.sudoku-play-icon {
+  border-bottom: 11px solid transparent;
+  border-left: 16px solid #006aa8;
+  border-top: 11px solid transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
+  margin-left: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.sudoku-play-button::before,
+.sudoku-play-button::after {
+  background-repeat: no-repeat;
+  content: "";
+  display: none;
+  height: 200%;
+  left: -50%;
+  pointer-events: none;
+  position: absolute;
+  top: -50%;
+  transition: all ease-in-out 0.5s;
+  width: 200%;
+  z-index: 0;
+}
+
+.sudoku-play-button::before {
+  background-image:
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, var(--sudoku-play-bubble) 20%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--sudoku-play-bubble) 15%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 18%, var(--sudoku-play-bubble) 19%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 12%, var(--sudoku-play-bubble) 16%, transparent 24%);
+  background-size: 18% 18%, 36% 36%, 26% 26%, 36% 36%, 32% 32%, 18% 18%, 26% 26%, 18% 18%, 32% 32%, 24% 24%, 16% 16%, 28% 28%, 22% 22%;
+}
+
+.sudoku-play-button::after {
+  background-image:
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--sudoku-play-bubble) 15%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 18%, var(--sudoku-play-bubble) 19%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-play-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 12%, var(--sudoku-play-bubble) 16%, transparent 24%);
+  background-size: 26% 26%, 36% 36%, 32% 32%, 36% 36%, 26% 26%, 18% 18%, 36% 36%, 24% 24%, 16% 16%, 28% 28%, 22% 22%;
+}
+
+.sudoku-play-button.animate::before {
+  animation: sudoku-bubble-burst-a ease-in-out 0.82s forwards;
+  display: block;
+}
+
+.sudoku-play-button.animate::after {
+  animation: sudoku-bubble-burst-b ease-in-out 0.82s forwards;
+  display: block;
+}
+
+#sudoku-check {
+  overflow: visible;
+  position: relative;
+}
+
+/* A full but unsolved board can only be resolved by Check. The button keeps a
+   gold glow for as long as that state lasts and plays the Windows 98
+   sunken-then-raised press twice when it begins. */
+#sudoku-check.is-board-full {
+  --sudoku-prompt-raised: var(--border-raised-outer), var(--border-raised-inner);
+  --sudoku-prompt-sunken: var(--border-sunken-outer), var(--border-sunken-inner);
+  --sudoku-prompt-glow: 0 0 0 2px var(--sudoku-prompt-gold),
+    0 0 14px 3px var(--sudoku-prompt-gold);
+  animation: sudoku-check-prompt-press 460ms ease-in-out 2;
+  box-shadow: var(--sudoku-prompt-raised), var(--sudoku-prompt-glow);
+}
+
+#sudoku-check.is-board-full:not(:disabled):active {
+  box-shadow: var(--sudoku-prompt-sunken), var(--sudoku-prompt-glow);
+  text-shadow: 1px 1px var(--text-color);
+}
+
+/* The duplicated stops keep each press instant: the 98 frame snaps, it does
+   not cross-fade. */
+@keyframes sudoku-check-prompt-press {
+  0%,
+  24% {
+    box-shadow: var(--sudoku-prompt-raised), var(--sudoku-prompt-glow);
+    text-shadow: 0 0 var(--text-color);
+  }
+
+  26%,
+  74% {
+    box-shadow: var(--sudoku-prompt-sunken), var(--sudoku-prompt-glow);
+    text-shadow: 1px 1px var(--text-color);
+  }
+
+  76%,
+  100% {
+    box-shadow: var(--sudoku-prompt-raised), var(--sudoku-prompt-glow);
+    text-shadow: 0 0 var(--text-color);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sudoku-check.is-board-full {
+    animation: none;
+  }
+}
+
+.sudoku-burst-effect {
+  --sudoku-burst-bubble: #16aee8;
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+}
+
+.sudoku-burst-effect--full {
+  inset: -10px;
+}
+
+.sudoku-burst-effect--button {
+  height: 220%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 220%;
+}
+
+.sudoku-burst-effect::before,
+.sudoku-burst-effect::after {
+  background-repeat: no-repeat;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.sudoku-burst-effect::before {
+  animation: sudoku-bubble-burst-a ease-in-out 0.82s forwards;
+  background-image:
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, var(--sudoku-burst-bubble) 20%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--sudoku-burst-bubble) 15%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 18%, var(--sudoku-burst-bubble) 19%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 12%, var(--sudoku-burst-bubble) 16%, transparent 24%);
+}
+
+.sudoku-burst-effect::after {
+  animation: sudoku-bubble-burst-b ease-in-out 0.82s forwards;
+  background-image:
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, var(--sudoku-burst-bubble) 15%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 18%, var(--sudoku-burst-bubble) 19%, transparent 30%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, var(--sudoku-burst-bubble) 20%, transparent 20%),
+    radial-gradient(circle, transparent 12%, var(--sudoku-burst-bubble) 16%, transparent 24%);
+}
+
+.sudoku-burst-effect--button::before {
+  background-size: 18% 18%, 36% 36%, 26% 26%, 36% 36%, 32% 32%, 18% 18%, 26% 26%, 18% 18%, 32% 32%, 24% 24%, 16% 16%, 28% 28%, 22% 22%;
+}
+
+.sudoku-burst-effect--button::after {
+  background-size: 26% 26%, 36% 36%, 32% 32%, 36% 36%, 26% 26%, 18% 18%, 36% 36%, 24% 24%, 16% 16%, 28% 28%, 22% 22%;
+}
+
+.sudoku-burst-effect--full::before {
+  background-size: 7% 7%, 14% 14%, 10% 10%, 14% 14%, 12% 12%, 7% 7%, 10% 10%, 7% 7%, 12% 12%, 9% 9%, 6% 6%, 11% 11%, 8% 8%;
+}
+
+.sudoku-burst-effect--full::after {
+  background-size: 10% 10%, 14% 14%, 12% 12%, 14% 14%, 10% 10%, 7% 7%, 14% 14%, 9% 9%, 6% 6%, 11% 11%, 8% 8%;
+}
+
+@keyframes sudoku-bubble-burst-a {
+  0% {
+    background-position: 48% 48%, 51% 46%, 54% 49%, 53% 53%, 49% 55%, 46% 52%, 45% 48%, 49% 44%, 55% 45%, 56% 52%, 51% 57%, 44% 55%, 43% 44%;
+  }
+
+  50% {
+    background-position: 50% 12%, 70% 16%, 88% 30%, 91% 52%, 82% 74%, 62% 90%, 38% 90%, 17% 76%, 8% 52%, 13% 26%, 31% 11%, 73% 92%, 27% 92%;
+  }
+
+  100% {
+    background-position: 50% -30%, 85% -18%, 119% 2%, 132% 48%, 116% 92%, 82% 122%, 50% 134%, 16% 122%, -18% 92%, -32% 48%, -16% 2%, 82% 136%, 18% 136%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+@keyframes sudoku-bubble-burst-b {
+  0% {
+    background-position: 52% 52%, 49% 55%, 45% 51%, 46% 47%, 51% 44%, 55% 47%, 57% 51%, 53% 56%, 47% 57%, 43% 50%, 57% 44%;
+  }
+
+  50% {
+    background-position: 67% 8%, 88% 17%, 98% 38%, 95% 66%, 75% 86%, 48% 98%, 22% 88%, 4% 66%, 1% 37%, 13% 14%, 34% 2%;
+  }
+
+  100% {
+    background-position: 72% -36%, 116% -14%, 138% 28%, 128% 78%, 94% 120%, 48% 142%, 4% 126%, -32% 78%, -38% 28%, -14% -20%, 34% -42%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+.sudoku-aero-header,
+.sudoku-grid-frame,
+.sudoku-actions,
+.sudoku-control-panel,
+.sudoku-statusbar {
+  position: relative;
+  z-index: 1;
+}
+
+.sudoku-aero-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.sudoku-board-column {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-width: 0;
+}
+
+/*
+ * The board and its pause overlay share one box so the resume button stays
+ * centered on the board at every responsive size.
+ */
+.sudoku-board-stack {
+  display: grid;
+  position: relative;
+  width: max-content;
+}
+
+/*
+ * Paused board. The values and notes are hidden outright rather than merely
+ * faded, and the board and control panel drop to a wash so the aquarium reads
+ * through them. Both regions carry `inert` while paused, so this is only the
+ * look of the lock, never the lock itself.
+ */
+.sudoku-pause-overlay {
+  display: none;
+}
+
+.sudoku-app.is-sudoku-paused .sudoku-pause-overlay {
+  display: grid;
+  inset: 0;
+  place-items: center;
+  position: absolute;
+  z-index: 2;
+}
+
+.sudoku-pause-overlay .sudoku-play-button {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.sudoku-app.is-sudoku-paused .sudoku-grid-frame,
+.sudoku-app.is-sudoku-paused .sudoku-control-panel {
+  opacity: 0.18;
+  transition: opacity 180ms ease;
+}
+
+.sudoku-app.is-sudoku-paused .sudoku-cell-value,
+.sudoku-app.is-sudoku-paused .sudoku-cell-notes {
+  visibility: hidden;
+}
+
+.sudoku-orb {
+  --gloss: 0.7;
+  --hue: var(--sudoku-hue);
+  --sat: var(--sudoku-sat);
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      rgba(255, 255, 255, var(--gloss)),
+      oklch(65% var(--sat) var(--hue)) 50%,
+      oklch(35% var(--sat) var(--hue)) 100%
+    );
+  border-radius: 50%;
+  box-shadow:
+    inset 0 -4px 8px rgba(0, 0, 0, 0.3),
+    0 4px 14px rgba(0, 0, 0, 0.34);
+  flex: 0 0 30px;
+  height: 30px;
+  position: relative;
+  transition: background 220ms ease, box-shadow 220ms ease;
+  width: 30px;
+}
+
+.sudoku-orb::after {
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(255, 255, 255, 0.8),
+      transparent
+    );
+  border-radius: 50%;
+  content: "";
+  height: 35%;
+  left: 18%;
+  pointer-events: none;
+  position: absolute;
+  top: 8%;
+  transform: rotate(-20deg);
+  width: 45%;
+}
+
+.sudoku-app[data-sudoku-difficulty="easy"] {
+  --sudoku-hue: 145;
+  --sudoku-sat: 0.14;
+}
+
+.sudoku-app[data-sudoku-difficulty="medium"] {
+  --sudoku-hue: 205;
+  --sudoku-sat: 0.15;
+}
+
+.sudoku-app[data-sudoku-difficulty="hard"] {
+  --sudoku-hue: 72;
+  --sudoku-sat: 0.16;
+}
+
+.sudoku-app[data-sudoku-difficulty="expert"] {
+  --sudoku-hue: 38;
+  --sudoku-sat: 0.17;
+}
+
+.sudoku-app[data-sudoku-difficulty="master"] {
+  --sudoku-hue: 305;
+  --sudoku-sat: 0.17;
+}
+
+.sudoku-app[data-sudoku-difficulty="extreme"] {
+  --sudoku-hue: 15;
+  --sudoku-sat: 0.18;
+}
+
+.sudoku-mode-label {
+  color: #054672;
+  flex: 1 1 auto;
+  font: bold 18px Arial, sans-serif;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.sudoku-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+}
+
+.sudoku-control-panel {
+  align-self: stretch;
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.16),
+      oklch(72% var(--sudoku-sat) var(--sudoku-hue) / 0.07) 45%,
+      rgba(255, 255, 255, 0.04)
+    ),
+    rgba(255, 255, 255, 0.08);
+  border: 1px solid oklch(84% var(--sudoku-sat) var(--sudoku-hue) / 0.6);
+  box-shadow:
+    inset 0 1px 18px rgba(255, 255, 255, 0.32),
+    inset 0 -10px 20px oklch(56% var(--sudoku-sat) var(--sudoku-hue) / 0.08),
+    0 0 0 1px oklch(58% var(--sudoku-sat) var(--sudoku-hue) / 0.24);
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  -webkit-backdrop-filter: blur(5px) saturate(130%);
+  backdrop-filter: blur(5px) saturate(130%);
+}
+
+@container (min-width: 541px) {
+  .sudoku-control-panel {
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+  }
+
+  .sudoku-control-panel .sudoku-actions {
+    align-self: end;
+    display: grid;
+    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sudoku-actions button {
+    min-width: 0;
+  }
+
+  #sudoku-check {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc((100% - 4px) / 2);
+  }
+}
+
+.sudoku-control-section {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sudoku-panel-label {
+  color: #054672;
+  font: bold 11px Arial, sans-serif;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.sudoku-number-grid,
+.sudoku-difficulty-grid,
+.sudoku-hint-options {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sudoku-number-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sudoku-difficulty-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/*
+ * Three modes fit one row on the desktop panel. On the compact panel the
+ * longest label, Conflicts, no longer fits a third of the width, so the row
+ * reflows to two columns rather than clipping.
+ */
+.sudoku-hint-options {
+  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+}
+
+.sudoku-number-grid button,
+.sudoku-difficulty-grid button,
+.sudoku-hint-options button,
+.sudoku-note-toggle {
+  min-width: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.sudoku-number-grid button {
+  min-height: 30px;
+}
+
+/*
+ * A digit button carries its own remaining count in the top-right corner.
+ * The button is positioned so the badge can sit out of the digit's way, and
+ * the digit keeps the centring the plain label had.
+ */
+.sudoku-number-grid button[data-sudoku-number]:not([data-sudoku-number="clear"]) {
+  position: relative;
+}
+
+.sudoku-number-digit {
+  display: block;
+}
+
+.sudoku-number-remaining {
+  color: #2d6c8c;
+  font-size: 8px;
+  font-weight: normal;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  right: 2px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  top: 2px;
+}
+
+.sudoku-number-grid button.is-selected .sudoku-number-remaining {
+  color: #05365c;
+}
+
+.sudoku-number-grid button.is-exhausted .sudoku-number-remaining {
+  color: inherit;
+}
+
+.sudoku-number-grid button[data-sudoku-number="clear"] {
+  grid-column: span 2;
+  min-height: 24px;
+}
+
+.sudoku-number-grid button.is-exhausted,
+.sudoku-number-grid button.is-exhausted.is-selected {
+  background: linear-gradient(#e6ecef, #cbd5db 47%, #b3bfc7 48%, #d2dbe0);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  color: #7b8992;
+  opacity: 0.6;
+  text-shadow: none;
+}
+
+.sudoku-key-tooltip {
+  background: #000;
+  border: 1px solid #fff;
+  box-shadow: 1px 1px 0 #000;
+  color: #fff;
+  display: none;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: fixed;
+  white-space: nowrap;
+  z-index: 10000;
+}
+
+.sudoku-key-tooltip.is-visible {
+  display: block;
+}
+
+.sudoku-difficulty-grid button.is-selected,
+.sudoku-number-grid button.is-selected,
+.sudoku-hint-options button.is-selected,
+.sudoku-note-toggle.is-selected {
+  background:
+    linear-gradient(#f7ffff, #8eeaff 47%, #1caee8 48%, #d9fbff);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -5px 8px rgba(0, 111, 190, 0.3),
+    0 0 8px rgba(87, 231, 255, 0.78);
+}
+
+.sudoku-note-toggle {
+  min-height: 24px;
+}
+
+.sudoku-grid-frame {
+  align-items: center;
+  background:
+    linear-gradient(
+      180deg,
+      oklch(96% var(--sudoku-sat) var(--sudoku-hue) / 0.18),
+      oklch(70% var(--sudoku-sat) var(--sudoku-hue) / 0.08)
+    ),
+    rgba(255, 255, 255, 0.09);
+  border: 1px solid oklch(84% var(--sudoku-sat) var(--sudoku-hue) / 0.76);
+  box-shadow:
+    inset 0 1px 18px rgba(255, 255, 255, 0.45),
+    inset 0 -10px 18px oklch(56% var(--sudoku-sat) var(--sudoku-hue) / 0.1),
+    0 0 0 1px oklch(58% var(--sudoku-sat) var(--sudoku-hue) / 0.44),
+    0 7px 16px rgba(0, 76, 144, 0.2),
+    0 0 16px oklch(72% var(--sudoku-sat) var(--sudoku-hue) / 0.28);
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  -webkit-backdrop-filter: blur(9px) saturate(170%);
+  backdrop-filter: blur(9px) saturate(170%);
+}
+
+.sudoku-row {
+  display: contents;
+}
+
+.sudoku-grid {
+  --sudoku-board-size: calc(var(--sudoku-cell-size) * 9);
+  background: rgba(255, 255, 255, 0.34);
+  border: 3px solid var(--sudoku-box-line);
+  box-sizing: content-box;
+  box-shadow:
+    0 0 0 1px oklch(54% var(--sudoku-sat) var(--sudoku-hue) / 0.48),
+    inset 0 0 15px rgba(255, 255, 255, 0.42);
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-rows: repeat(9, minmax(0, 1fr));
+  height: var(--sudoku-board-size);
+  justify-content: start;
+  overflow: hidden;
+  position: relative;
+  width: var(--sudoku-board-size);
+}
+
+.sudoku-grid::before,
+.sudoku-grid::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.sudoku-grid::before {
+  background-image:
+    linear-gradient(to right, transparent calc(100% - 1px), var(--sudoku-grid-line) calc(100% - 1px)),
+    linear-gradient(to bottom, transparent calc(100% - 1px), var(--sudoku-grid-line) calc(100% - 1px));
+  background-size: calc(100% / 9) calc(100% / 9);
+  z-index: 2;
+}
+
+.sudoku-grid::after {
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(33.333333% - 1.5px),
+      var(--sudoku-box-line) calc(33.333333% - 1.5px) calc(33.333333% + 1.5px),
+      transparent calc(33.333333% + 1.5px) calc(66.666667% - 1.5px),
+      var(--sudoku-box-line) calc(66.666667% - 1.5px) calc(66.666667% + 1.5px),
+      transparent calc(66.666667% + 1.5px)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(33.333333% - 1.5px),
+      var(--sudoku-box-line) calc(33.333333% - 1.5px) calc(33.333333% + 1.5px),
+      transparent calc(33.333333% + 1.5px) calc(66.666667% - 1.5px),
+      var(--sudoku-box-line) calc(66.666667% - 1.5px) calc(66.666667% + 1.5px),
+      transparent calc(66.666667% + 1.5px)
+    );
+  z-index: 3;
+}
+
+.sudoku-grid .sudoku-cell {
+  --sudoku-axis-highlight: transparent;
+  --sudoku-conflict-highlight: transparent;
+  --sudoku-value-highlight: transparent;
+  appearance: none;
+  aspect-ratio: 1 / 1;
+  background:
+    linear-gradient(var(--sudoku-conflict-highlight), var(--sudoku-conflict-highlight)),
+    linear-gradient(var(--sudoku-value-highlight), var(--sudoku-value-highlight)),
+    linear-gradient(var(--sudoku-axis-highlight), var(--sudoku-axis-highlight)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(217, 249, 255, 0.38)),
+    rgba(239, 255, 255, 0.4);
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: #05365c;
+  cursor: default;
+  display: grid;
+  font-family: Arial, sans-serif;
+  font-size: 21px;
+  font-weight: bold;
+  height: var(--sudoku-cell-size);
+  line-height: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  place-items: center;
+  position: relative;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.78);
+  user-select: none;
+  width: var(--sudoku-cell-size);
+}
+
+.sudoku-cell-value {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+}
+
+.sudoku-grid .sudoku-cell:not(.has-value) .sudoku-cell-value {
+  display: none;
+}
+
+.sudoku-cell-notes {
+  color: #0b5876;
+  display: grid;
+  font-size: max(8px, calc(var(--sudoku-cell-size) * 0.25));
+  font-weight: bold;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  inset: 3px;
+  line-height: 1;
+  opacity: 0.9;
+  position: absolute;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+  z-index: 1;
+}
+
+.sudoku-grid .sudoku-cell.has-value .sudoku-cell-notes {
+  display: none;
+}
+
+.sudoku-note-digit {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+}
+
+/*
+ * Selecting a value lights the pencil marks that name it, in the same blue
+ * as the is-same-value tint on placed digits. CSS cannot compare two
+ * attributes, so the nine pairings are written out; the grid carries the
+ * selected value, which keeps the whole board in step with one attribute.
+ * An unwritten slot is empty, and an empty slot is not a pencil mark.
+ */
+.sudoku-grid[data-sudoku-note-highlight="1"] .sudoku-note-digit[data-sudoku-note="1"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="2"] .sudoku-note-digit[data-sudoku-note="2"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="3"] .sudoku-note-digit[data-sudoku-note="3"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="4"] .sudoku-note-digit[data-sudoku-note="4"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="5"] .sudoku-note-digit[data-sudoku-note="5"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="6"] .sudoku-note-digit[data-sudoku-note="6"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="7"] .sudoku-note-digit[data-sudoku-note="7"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="8"] .sudoku-note-digit[data-sudoku-note="8"]:not(:empty),
+.sudoku-grid[data-sudoku-note-highlight="9"] .sudoku-note-digit[data-sudoku-note="9"]:not(:empty) {
+  background: rgba(0, 176, 255, 0.4);
+  border-radius: 2px;
+  color: #002b47;
+  text-shadow: none;
+}
+
+.sudoku-grid .sudoku-cell:focus {
+  outline: none;
+}
+
+.sudoku-grid .sudoku-cell.is-selected {
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 236, 255, 0.92),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.34),
+    inset 0 0 8px rgba(0, 239, 255, 0.58);
+  position: relative;
+  z-index: 2;
+}
+
+.sudoku-grid .sudoku-cell.is-axis-highlight {
+  --sudoku-axis-highlight: rgba(255, 244, 135, 0.42);
+}
+
+.sudoku-grid .sudoku-cell.is-same-value {
+  --sudoku-value-highlight: rgba(0, 176, 255, 0.4);
+}
+
+.sudoku-grid .sudoku-cell.is-given {
+  background:
+    linear-gradient(var(--sudoku-conflict-highlight), var(--sudoku-conflict-highlight)),
+    linear-gradient(var(--sudoku-value-highlight), var(--sudoku-value-highlight)),
+    linear-gradient(var(--sudoku-axis-highlight), var(--sudoku-axis-highlight)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(184, 208, 220, 0.58)),
+    rgba(229, 237, 241, 0.68);
+  color: #0c3151;
+  font-weight: bold;
+}
+
+.sudoku-grid .sudoku-cell.is-solved-wave {
+  animation: sudoku-solved-tile-blue 520ms ease-out var(--sudoku-solve-delay, 0ms) both;
+}
+
+@keyframes sudoku-solved-tile-blue {
+  0% {
+    background:
+      linear-gradient(var(--sudoku-axis-highlight), var(--sudoku-axis-highlight)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(217, 249, 255, 0.38)),
+      rgba(239, 255, 255, 0.4);
+    color: #05365c;
+    transform: scale(1);
+  }
+
+  52% {
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+      linear-gradient(180deg, #f6ffff, #58d7ff 42%, #008fe2 43%, #25c8ff);
+    color: #003e71;
+    transform: scale(1.08);
+  }
+
+  100% {
+    background:
+      linear-gradient(var(--sudoku-axis-highlight), var(--sudoku-axis-highlight)),
+      linear-gradient(180deg, rgba(247, 255, 255, 0.98), rgba(85, 218, 255, 0.9) 42%, rgba(0, 129, 214, 0.92) 43%, rgba(159, 245, 255, 0.96)),
+      #45d9ff;
+    color: #003b67;
+    text-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95),
+      0 0 6px rgba(255, 255, 255, 0.78);
+    transform: scale(1);
+  }
+}
+
+/*
+ * A conflict is a statement about the board, not a verdict on the entry, so
+ * it reads as a steady amber marker rather than the red alarm Errors uses:
+ * a tint layer over the cell's own background plus a wedge in the corner for
+ * anyone who cannot separate the two by hue alone.
+ */
+.sudoku-grid .sudoku-cell.is-conflict {
+  --sudoku-conflict-highlight: rgba(255, 150, 22, 0.44);
+  color: #6a2800;
+}
+
+.sudoku-grid .sudoku-cell.is-conflict::after {
+  border-left: 7px solid transparent;
+  border-top: 7px solid #a33b00;
+  content: "";
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 0;
+}
+
+.sudoku-grid .sudoku-cell.is-invalid {
+  animation: sudoku-alert-flash 480ms steps(2, end) 3;
+  background: #c00000;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+
+@keyframes sudoku-alert-flash {
+  0%,
+  100% {
+    background: #c00000;
+    color: #fff;
+  }
+
+  50% {
+    background: #fff;
+    color: #a00000;
+  }
+}
+
+.sudoku-statusbar {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  display: grid;
+  font-size: 11px;
+  gap: 0;
+  grid-template-columns: minmax(96px, 1fr) 82px 90px;
+  min-height: 20px;
+}
+
+.sudoku-app.is-sudoku-playing .sudoku-statusbar {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.34),
+      oklch(86% var(--sudoku-sat) var(--sudoku-hue) / 0.16)
+    ),
+    rgba(245, 254, 255, 0.12);
+  box-shadow:
+    var(--border-sunken-outer),
+    var(--border-sunken-inner),
+    inset 0 1px 10px rgba(255, 255, 255, 0.32),
+    inset 0 -6px 12px oklch(54% var(--sudoku-sat) var(--sudoku-hue) / 0.06);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  backdrop-filter: blur(8px) saturate(150%);
+}
+
+.sudoku-statusbar span {
+  align-items: center;
+  border-right: 1px solid #808080;
+  box-sizing: border-box;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  padding: 2px 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#sudoku-mistakes,
+#sudoku-time,
+#sudoku-best {
+  font-variant-numeric: tabular-nums;
+}
+
+#sudoku-time {
+  border-right: 0;
+}
+
+#sudoku-best {
+  border-top: 1px solid #808080;
+  grid-column: 1 / -1;
+}
+
+.sudoku-statusbar span:last-child {
+  border-right: 0;
+}
+
+.sudoku-solve-popup {
+  align-items: center;
+  background: rgba(0, 50, 82, 0.22);
+  display: none;
+  inset: 0;
+  justify-content: center;
+  padding: 16px;
+  position: absolute;
+  z-index: 20;
+}
+
+.sudoku-solve-popup.is-visible {
+  display: flex;
+}
+
+.sudoku-errors-prompt {
+  background: transparent;
+  border: 0;
+  color: #000;
+  margin: auto;
+  max-height: calc(100vh - 32px);
+  max-width: calc(100vw - 32px);
+  padding: 0;
+  width: min(320px, calc(100vw - 32px));
+}
+
+.sudoku-errors-prompt::backdrop {
+  background: rgba(0, 30, 52, 0.46);
+}
+
+.sudoku-errors-prompt .sudoku-solve-dialog {
+  max-width: 100%;
+  width: 100%;
+}
+
+.sudoku-solve-dialog {
+  background: var(--surface);
+  box-shadow: var(--border-window-outer), var(--border-window-inner);
+  box-sizing: border-box;
+  max-width: min(320px, 100%);
+  min-width: 244px;
+  padding: 3px;
+}
+
+.sudoku-solve-dialog .title-bar {
+  margin-bottom: 8px;
+}
+
+.sudoku-solve-body {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 42px 1fr;
+  padding: 8px 10px 12px;
+}
+
+.sudoku-solve-ball {
+  --gloss: 0.72;
+  --hue: var(--sudoku-hue);
+  --sat: var(--sudoku-sat);
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      rgba(255, 255, 255, var(--gloss)),
+      oklch(65% var(--sat) var(--hue)) 50%,
+      oklch(35% var(--sat) var(--hue)) 100%
+    );
+  border-radius: 50%;
+  box-shadow:
+    inset 0 -5px 9px rgba(0, 0, 0, 0.3),
+    0 3px 9px rgba(0, 0, 0, 0.28);
+  height: 34px;
+  position: relative;
+  width: 34px;
+}
+
+.sudoku-solve-ball::after {
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.82), transparent);
+  border-radius: 50%;
+  content: "";
+  height: 34%;
+  left: 18%;
+  position: absolute;
+  top: 9%;
+  transform: rotate(-20deg);
+  width: 44%;
+}
+
+.sudoku-solve-message {
+  color: #000;
+  font-size: 12px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.sudoku-solve-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.sudoku-solve-actions button {
+  min-width: 72px;
+}
+
+.sudoku-errors-prompt-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@container (max-width: 540px) {
+  .sudoku-game-content {
+    --sudoku-cell-size: min(40px, calc((100cqw - 24px) / 9));
+    grid-template-columns: 1fr;
+  }
+
+  .sudoku-control-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sudoku-control-section:first-child {
+    grid-row: span 2;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .sudoku-number-grid {
+    grid-template-rows: repeat(4, minmax(30px, 1fr));
+  }
+
+  .sudoku-control-panel .sudoku-actions {
+    grid-column: 1 / -1;
+  }
+
+  .sudoku-actions button {
+    flex: 0 0 calc((100% - 12px) / 3);
+    min-width: 0;
+  }
+
+  #sudoku-check {
+    order: 1;
+  }
+  #sudoku-undo {
+    order: 2;
+  }
+  #sudoku-redo {
+    order: 3;
+  }
+}
+
+@media (max-width: 680px) {
+  .sudoku-app.is-sudoku-playing .sudoku-aero-panel {
+    padding-inline: 11px;
+  }
+
+  .sudoku-window {
+    width: min(94vw, 424px);
+  }
+}
+
+/* Victory effects, body-level so window transforms cannot clip them. */
+.sudoku-confetti {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 100;
+}
+
+.sudoku-fireworks {
+  display: none;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 110;
+}
+
+.sudoku-fireworks.is-showing {
+  display: block;
+}
+
+.sudoku-firework-dot {
+  --sudoku-firework-color: #fff;
+  --sudoku-firework-dx: 0px;
+  --sudoku-firework-dy: 0px;
+  animation: sudoku-firework-burst 950ms ease-out forwards;
+  background: var(--sudoku-firework-color);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--sudoku-firework-color);
+  height: 5px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  will-change: opacity, transform;
+}
+
+@keyframes sudoku-firework-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--sudoku-firework-dx)), calc(-50% + var(--sudoku-firework-dy))) scale(0.25);
+  }
+}
+
+.sudoku-achievement {
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  transform: translateX(120%);
+  width: min(320px, 90vw);
+  z-index: 120;
+}
+
+.sudoku-achievement img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+.sudoku-achievement.is-showing {
+  animation: sudoku-achievement-slide 6s ease-in-out forwards;
+}
+
+@keyframes sudoku-achievement-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+
+  8% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  92% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}

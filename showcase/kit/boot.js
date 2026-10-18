@@ -49,12 +49,16 @@ const launch = (apps) => (appId, event, button) => {
     window.open(app.href, "_blank", "noopener,noreferrer");
     return;
   }
+  if (!app.hasWindow) return;
   toggleWindow(app.id);
   if (app.window.dialog && kit.isWindowOpen(app.id)) {
     const win = kit.getWindow(app.id);
     kit.setFocusReturn(win, button);
     requestAnimationFrame(() => {
-      win.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR)?.focus({ preventScroll: true });
+      const body = win.querySelector(".window-body");
+      (body?.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR) || win.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR))?.focus({
+        preventScroll: true,
+      });
     });
   }
 };
@@ -76,9 +80,9 @@ export const boot = async () => {
   installWindowManager();
   const context = { kit, config: site, apps };
   for (const app of apps) {
-    if (app.isLink) continue;
-    createWindow(app, { ...context, app });
+    if (app.hasWindow) createWindow(app, { ...context, app });
     for (const extra of app.windows) createWindow(extra, { ...context, app });
+    if (!app.hasWindow && !app.isLink) app.mount?.({ ...context, app, id: app.id, window: null, body: null });
   }
   mountDeclaredCarousels(document);
   fitImagesIntoFrames(document);
@@ -93,11 +97,15 @@ export const boot = async () => {
   startButton.addEventListener("click", closeAllWindows);
   initCalendar(site.calendar, clockButton, site.clock);
   bindLaunchers(document, launch(apps));
+  for (const app of apps) {
+    if (!app.decorateLauncher) continue;
+    document.querySelectorAll(`[data-app="${app.id}"]`).forEach((button) => app.decorateLauncher(button));
+  }
 
   // Deep links: index.html#about opens that window on arrival.
   const openFromHash = () => {
     const id = window.location.hash.slice(1);
-    if (id && ids.includes(id) && !byId(id).isLink) openWindow(id);
+    if (id && ids.includes(id) && byId(id).hasWindow) openWindow(id);
   };
   openFromHash();
   window.addEventListener("hashchange", openFromHash);

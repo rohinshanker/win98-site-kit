@@ -25,7 +25,8 @@ registry/<apps|games>/<id>/
 ```
 
 `files` lists every file in the package except `manifest.json`, and all of
-them sit under `apps/<id>/` or `assets/<id>/` so `remove` can clean up.
+them sit under `apps/<id>/`, `assets/<id>/` or (for an optional server-side
+helper such as the Clash Royale proxy) `proxy/<id>/`, so `remove` can clean up.
 
 ## Conversion rules
 

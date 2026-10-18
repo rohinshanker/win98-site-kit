@@ -1,0 +1,455 @@
+/*
+ * minesweeper.css — the Minesweeper window (counters, faces, board, footer,
+ * best-time status), the Keyboard Controls window, and the body-level
+ * confetti canvas and achievement banner. Asset URLs resolve from this file
+ * to ../../assets/minesweeper/.
+ */
+
+.minesweeper-window {
+  width: min(92vw, 520px);
+}
+
+.minesweeper-window .window-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ms-app {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.ms-achievement {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: min(320px, 90vw);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(120%);
+  z-index: 120;
+}
+
+.ms-achievement img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.ms-achievement.is-showing {
+  animation: ms-achievement-slide 6s ease-in-out forwards;
+}
+
+@keyframes ms-achievement-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+  8% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  92% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+.ms-top-panel {
+  align-items: center;
+  column-gap: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px 38px 32px minmax(0, 1fr);
+  padding: 8px;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+#ms-mines {
+  grid-column: 1;
+  justify-self: start;
+}
+
+#ms-time {
+  grid-column: 5;
+  justify-self: end;
+}
+
+.ms-counter {
+  align-items: center;
+  background: #000;
+  border-radius: 0;
+  box-shadow: inset 1px 1px 0 #222, inset -1px -1px 0 #555;
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  padding: 3px 4px;
+}
+
+.ms-reset {
+  grid-column: 3;
+  width: 38px;
+  height: 38px;
+  border: none;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 38px;
+  text-shadow: none;
+  color: #000;
+}
+
+/* 32px is the pixel-aligned 15% reduction from the 38px reset control. */
+.ms-mark-control {
+  align-items: center;
+  background: var(--surface);
+  box-shadow: none;
+  color: #000;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+  text-shadow: none;
+  width: 32px;
+}
+
+.ms-mark-control[hidden] {
+  display: none;
+}
+
+#ms-flag-mode {
+  grid-column: 2;
+}
+
+#ms-question-mode {
+  grid-column: 4;
+}
+
+.ms-mark-control::before {
+  background: center / contain no-repeat;
+  content: "";
+  display: block;
+  height: 20px;
+  image-rendering: pixelated;
+  width: 20px;
+}
+
+.ms-mark-control[data-ms-mark-mode="flag"]::before {
+  background-image: url("../../assets/minesweeper/tiles/tile_flag.png");
+}
+
+.ms-mark-control[data-ms-mark-mode="question"]::before {
+  background-image: url("../../assets/minesweeper/tiles/tile_question.png");
+}
+
+.ms-mark-control.is-active,
+.ms-mark-control[aria-pressed="true"] {
+  background: #dbeeff;
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+.ms-reset::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  background: center / contain no-repeat var(--ms-face-image, none);
+  display: block;
+  image-rendering: pixelated;
+}
+
+.ms-reset[data-face="smile"] {
+  --ms-face-image: url("../../assets/minesweeper/faces/face_smile.png");
+}
+
+/* The smile asset has an uneven source canvas. Offset only this face by one
+ * pixel so its visible circle is centered in the reset button. */
+.ms-reset[data-face="smile"]::before {
+  background-position: calc(50% - 1px) center;
+}
+
+.ms-reset[data-face="ooh"] {
+  --ms-face-image: url("../../assets/minesweeper/faces/face_surprised.png");
+}
+
+.ms-reset[data-face="pressed"] {
+  --ms-face-image: url("../../assets/minesweeper/faces/face_pressed.png");
+}
+
+.ms-reset[data-face="lose"] {
+  --ms-face-image: url("../../assets/minesweeper/faces/face_dead.png");
+}
+
+.ms-reset[data-face="win"] {
+  --ms-face-image: url("../../assets/minesweeper/faces/face_cool.png");
+}
+
+.ms-board {
+  padding: 6px;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ms-board.is-overflowing {
+  justify-content: flex-start;
+}
+
+.ms-row {
+  display: contents;
+}
+
+.ms-grid {
+  --ms-cell-size: 20px;
+  display: grid;
+  gap: 0;
+  user-select: none;
+  touch-action: none;
+  align-content: start;
+  justify-content: start;
+}
+
+.ms-cell {
+  width: var(--ms-cell-size);
+  height: var(--ms-cell-size);
+  min-width: var(--ms-cell-size);
+  min-height: var(--ms-cell-size);
+  border: none;
+  padding: 0;
+  background: center / contain no-repeat url("../../assets/minesweeper/tiles/tile_covered.png");
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+  text-shadow: none;
+  color: transparent;
+  image-rendering: pixelated;
+}
+
+.ms-cell:focus {
+  outline: none;
+}
+
+.ms-cell:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+.ms-cell.is-revealed {
+  background-image: url("../../assets/minesweeper/tiles/tile_revealed_empty.png");
+  box-shadow: none;
+  cursor: default;
+}
+
+.ms-cell.is-flagged {
+  background-image: url("../../assets/minesweeper/tiles/tile_flag.png");
+}
+
+.ms-cell.is-question {
+  background-image: url("../../assets/minesweeper/tiles/tile_question.png");
+}
+
+.ms-cell.is-question.is-pressed {
+  background-image: url("../../assets/minesweeper/tiles/tile_question_pressed.png");
+}
+
+.ms-cell.is-pressed {
+  background-image: url("../../assets/minesweeper/tiles/tile_revealed_empty.png");
+}
+
+.ms-cell.is-mine {
+  background-image: url("../../assets/minesweeper/tiles/tile_mine.png");
+}
+
+.ms-cell.is-blown {
+  background-image: url("../../assets/minesweeper/tiles/tile_mine_exploded.png");
+}
+
+.ms-cell.is-mine-wrong {
+  background-image: url("../../assets/minesweeper/tiles/tile_mine_wrong.png");
+}
+
+.ms-cell[data-number="1"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_1.png");
+}
+
+.ms-cell[data-number="2"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_2.png");
+}
+
+.ms-cell[data-number="3"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_3.png");
+}
+
+.ms-cell[data-number="4"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_4.png");
+}
+
+.ms-cell[data-number="5"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_5.png");
+}
+
+.ms-cell[data-number="6"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_6.png");
+}
+
+.ms-cell[data-number="7"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_7.png");
+}
+
+.ms-cell[data-number="8"] {
+  background-image: url("../../assets/minesweeper/cell_numbers/cell_8.png");
+}
+
+.ms-digit {
+  width: 18px;
+  height: 30px;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.ms-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.ms-footer label {
+  min-width: 0;
+}
+
+.ms-footer select {
+  height: 22px;
+  min-width: 0;
+  width: 100%;
+}
+
+.minesweeper-controls-window {
+  width: min(92vw, 330px);
+}
+
+.minesweeper-controls-window .window-body {
+  min-height: 0;
+}
+
+.minesweeper-controls-window .title-bar-controls button:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+.ms-controls-target-note {
+  margin: 2px 2px 8px;
+}
+
+.ms-controls-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+}
+
+.ms-controls-list li {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr);
+}
+
+.ms-controls-list img {
+  height: 20px;
+  image-rendering: pixelated;
+  justify-self: center;
+  object-fit: contain;
+  width: 20px;
+}
+
+.ms-controls-list kbd {
+  background: var(--surface);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  display: inline-block;
+  font: inherit;
+  min-width: 14px;
+  padding: 2px 4px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .ms-footer {
+    gap: 4px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ms-lose-banner {
+  position: absolute;
+  left: 0;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 2.5s ease-out;
+}
+
+.ms-lose-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.ms-lose-banner.is-visible {
+  opacity: 1;
+}
+
+.ms-confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.ms-status {
+  font-size: 11px;
+}
+
+.ms-status .status-bar-field {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-status .status-bar-field.is-new-record {
+  font-weight: bold;
+}

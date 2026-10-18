@@ -4,12 +4,22 @@
 // or edit this list by hand; order here is the fallback desktop/dock order.
 
 import about from "./about/index.js";
+import clashRoyale from "./clash-royale/index.js";
+import components from "./components/index.js";
+import counter from "./counter/index.js";
+import creativeWork from "./creative-work/index.js";
 import credits from "./credits/index.js";
 import cursorSettings from "./cursor-settings/index.js";
 import displayProperties from "./display-properties/index.js";
+import minesweeper from "./minesweeper/index.js";
 import mySite from "./my-site/index.js";
+import neko from "./neko/index.js";
 import projects from "./projects/index.js";
+import snake from "./snake/index.js";
 import socials from "./socials/index.js";
+import solitaire from "./solitaire/index.js";
+import studyResources from "./study-resources/index.js";
+import sudoku from "./sudoku/index.js";
 import writing from "./writing/index.js";
 
-export default [about, credits, cursorSettings, displayProperties, mySite, projects, socials, writing];
+export default [about, clashRoyale, components, counter, creativeWork, credits, cursorSettings, displayProperties, minesweeper, mySite, neko, projects, snake, socials, solitaire, studyResources, sudoku, writing];

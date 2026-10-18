@@ -1,0 +1,16 @@
+{
+  "id": "study-resources",
+  "kind": "app",
+  "title": "Study Resources",
+  "description": "Explorer-style file browser for notes and PDFs: folder tree, list or gallery view, address bar, PDF preview with open, new-tab and download actions.",
+  "version": "1.0.0",
+  "files": [
+    "apps/study-resources/index.js",
+    "apps/study-resources/explorer.js",
+    "apps/study-resources/resources.js",
+    "apps/study-resources/study-resources.css",
+    "assets/study-resources/sample-notes.pdf",
+    "assets/study-resources/sample-cheatsheet.pdf"
+  ],
+  "requires": []
+}

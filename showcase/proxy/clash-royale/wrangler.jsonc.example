@@ -1,0 +1,16 @@
+// Copy to wrangler.jsonc next to worker.mjs, edit the vars, then
+// `npx wrangler secret put CLASH_ROYALE_API_KEY` and `npx wrangler deploy`.
+// The secret never goes in this file.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "clash-royale-proxy",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-01-01",
+  "vars": {
+    // Your player tag; the proxy serves only this player. Leave "" to let
+    // callers pick any tag with ?tag=XXXX (they would spend your API quota).
+    "PLAYER_TAG": "#2PP",
+    // Comma-separated site origins allowed to call the proxy from a browser.
+    "ALLOWED_ORIGINS": "https://example.com,http://127.0.0.1:4173"
+  }
+}

@@ -9,6 +9,8 @@ test("a minimal app gets a close-only window and no hooks", () => {
   assert.equal(app.hasWindow, true);
   assert.equal(app.isLink, false);
   assert.deepEqual(app.window.controls, ["close"]);
+  assert.equal(app.window.alwaysOnTop, false);
+  assert.equal(normalizeWindowOptions({ alwaysOnTop: true }, "demo").alwaysOnTop, true);
   assert.equal(app.label, "Demo");
   assert.deepEqual(app.hooks, {});
   assert.equal(app.render(), "");

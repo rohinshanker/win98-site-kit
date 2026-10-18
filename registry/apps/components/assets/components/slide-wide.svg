@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" role="img" aria-label="Wide slide placeholder">
+  <rect width="640" height="360" fill="#c0c0c0"/>
+  <rect x="24" y="24" width="592" height="312" fill="#fff" stroke="#808080" stroke-width="4"/>
+  <rect x="48" y="48" width="544" height="40" fill="#000080"/>
+  <text x="64" y="76" font-family="monospace" font-size="24" fill="#fff">slide-wide.svg (16:9)</text>
+  <rect x="48" y="112" width="260" height="200" fill="#008080"/>
+  <rect x="332" y="112" width="260" height="20" fill="#808080"/>
+  <rect x="332" y="148" width="200" height="20" fill="#808080"/>
+  <rect x="332" y="184" width="230" height="20" fill="#808080"/>
+</svg>

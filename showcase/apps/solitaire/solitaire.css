@@ -1,0 +1,495 @@
+/* Solitaire: the game window, its rules window and the body-level overlays
+   (fireworks, achievement banner, tableau tooltips). Asset URLs are relative
+   to this file. */
+
+.solitaire-window {
+  width: max-content;
+  max-width: calc(100vw - 24px);
+}
+
+.solitaire-window .window-body {
+  max-width: calc(100vw - 48px);
+  min-height: 0;
+  overflow-x: auto;
+}
+
+.sol-app {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+}
+
+.sol-toolbar {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  gap: 8px;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px;
+  position: relative;
+  width: 100%;
+}
+
+.sol-toolbar button {
+  min-width: 70px;
+}
+
+.sol-reset,
+.sol-undo,
+.sol-auto-solve {
+  align-items: center;
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  min-height: 34px;
+  min-width: 34px;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+}
+
+.sol-reset,
+.sol-auto-solve {
+  left: 8px;
+}
+
+.sol-reset[hidden],
+.sol-auto-solve[hidden] {
+  display: none;
+}
+
+.sol-undo {
+  right: 8px;
+}
+
+.sol-reset:not(:disabled):active,
+.sol-undo:not(:disabled):active,
+.sol-auto-solve:not(:disabled):active {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  padding: 1px 0 0 1px;
+}
+
+.sol-undo:disabled,
+.sol-auto-solve:disabled {
+  cursor: default;
+}
+
+.sol-reset img,
+.sol-undo img,
+.sol-auto-solve img {
+  display: block;
+  height: 22px;
+  image-rendering: pixelated;
+  width: 22px;
+}
+
+.sol-undo:disabled img,
+.sol-auto-solve:disabled img {
+  opacity: 0.35;
+}
+
+/* Gold glow when the run will finish the game. Opacity-only pulse. */
+.sol-auto-solve.is-completing::after {
+  animation: sol-auto-solve-glow 1600ms ease-in-out infinite;
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 2px #ffd54a,
+    0 0 12px 5px rgba(255, 196, 0, 0.8);
+  content: "";
+  inset: -1px;
+  pointer-events: none;
+  position: absolute;
+  will-change: opacity;
+}
+
+@keyframes sol-auto-solve-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.sol-counter {
+  align-items: center;
+  background: #000;
+  border-radius: 0;
+  box-shadow: inset 1px 1px 0 #222, inset -1px -1px 0 #555;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0;
+  justify-content: center;
+  padding: 3px 4px;
+}
+
+.sol-digit {
+  display: block;
+  height: 30px;
+  image-rendering: pixelated;
+  width: 18px;
+}
+
+.sol-board {
+  --sol-card-w: 72px;
+  --sol-card-h: 88px;
+  --sol-gap: 12px;
+  --sol-overlap: 24px;
+  background: #008000;
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  box-sizing: border-box;
+  color: #fff;
+  max-height: min(68vh, 560px);
+  max-width: 100%;
+  overflow: auto;
+  padding: 10px;
+  position: relative;
+  width: max-content;
+}
+
+.sol-board.is-auto-solving .sol-card,
+.sol-board.is-auto-solving .sol-slot,
+.sol-board.is-auto-solving .sol-tableau-col {
+  cursor: default;
+  pointer-events: none;
+}
+
+.sol-top-row,
+.sol-tableau {
+  display: grid;
+  gap: var(--sol-gap);
+  grid-template-columns: repeat(7, var(--sol-card-w));
+  width: max-content;
+}
+
+.sol-top-row {
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.sol-slot,
+.sol-card {
+  width: var(--sol-card-w);
+  height: var(--sol-card-h);
+  min-width: var(--sol-card-w);
+  min-height: var(--sol-card-h);
+}
+
+.sol-slot {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.sol-slot[role="button"] {
+  cursor: pointer;
+}
+
+.sol-slot:focus {
+  outline: 1px dotted #fff;
+  outline-offset: -4px;
+}
+
+.sol-slot-mark {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 24px;
+  line-height: 1;
+  text-shadow: 1px 1px 0 #004400;
+}
+
+.sol-tableau-col {
+  min-height: var(--sol-card-h);
+  position: relative;
+}
+
+.sol-tableau-tooltip {
+  background: #000;
+  border: 1px solid #fff;
+  box-shadow: 1px 1px 0 #000;
+  color: #fff;
+  display: none;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: fixed;
+  white-space: nowrap;
+  z-index: 10000;
+}
+
+.sol-tableau-tooltip.is-visible {
+  display: block;
+}
+
+.sol-card {
+  background-color: transparent;
+  background-image: url("../../assets/solitaire/poker nano.png");
+  background-position: var(--sol-sprite-x, 0%) var(--sol-sprite-y, 0%);
+  background-repeat: no-repeat;
+  background-size: 1300% auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: transparent;
+  cursor: pointer;
+  display: block;
+  image-rendering: pixelated;
+  line-height: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  text-shadow: none;
+}
+
+.sol-card + .sol-card {
+  margin-top: calc(var(--sol-overlap) - var(--sol-card-h));
+}
+
+button.sol-card:not(:disabled):active {
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.sol-card.is-selected {
+  outline: 2px solid #ffff00;
+  outline-offset: 1px;
+  z-index: 2;
+}
+
+.sol-card.is-auto-solve-lifted {
+  visibility: hidden;
+}
+
+.sol-card.sol-flying-card {
+  box-shadow: none;
+  left: 0;
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  will-change: translate, scale, filter;
+  z-index: 5;
+}
+
+/* Camera flash: full brightness in 70ms, then twice as long to fade. The box
+   matches the card and its rounded corners (2 sprite pixels), so the flash
+   edge sits on the card edge and the glow spreads outward. */
+.sol-foundation-flash {
+  animation: sol-foundation-flash 210ms linear both;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: calc(var(--sol-card-w) / 9);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 26px 14px rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  will-change: opacity;
+  z-index: 6;
+}
+
+@keyframes sol-foundation-flash {
+  0% {
+    opacity: 0;
+  }
+
+  33.333% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------ victory */
+
+.sol-victory-video-overlay {
+  --sol-victory-height-limit: 27vh;
+  --sol-victory-width-limit: 28.8vw;
+  --sol-victory-width: min(234px, var(--sol-victory-width-limit));
+  align-items: flex-start;
+  background: transparent;
+  box-sizing: border-box;
+  display: none;
+  inset: 60px 0 0;
+  justify-content: center;
+  overflow: hidden;
+  padding-top: 16px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 111;
+}
+
+.sol-victory-video-overlay.is-showing {
+  display: flex;
+}
+
+.sol-victory-video-overlay video {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.sol-victory-video-overlay video.is-visible-fallback {
+  height: auto;
+  max-height: var(--sol-victory-height-limit);
+  max-width: var(--sol-victory-width-limit);
+  mix-blend-mode: screen;
+  opacity: 1;
+  position: static;
+  width: var(--sol-victory-width);
+}
+
+.sol-victory-video-overlay canvas {
+  display: block;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.38));
+  height: auto;
+  max-height: var(--sol-victory-height-limit);
+  max-width: var(--sol-victory-width-limit);
+  width: var(--sol-victory-width);
+}
+
+.sol-victory-video-overlay canvas.is-hidden {
+  display: none;
+}
+
+.sol-fireworks {
+  display: none;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 110;
+}
+
+.sol-fireworks.is-showing {
+  display: block;
+}
+
+.sol-firework-dot {
+  --sol-firework-color: #fff;
+  --sol-firework-dx: 0px;
+  --sol-firework-dy: 0px;
+  animation: sol-firework-burst 950ms ease-out forwards;
+  background: var(--sol-firework-color);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--sol-firework-color);
+  height: 5px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  will-change: opacity, transform;
+}
+
+@keyframes sol-firework-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--sol-firework-dx)), calc(-50% + var(--sol-firework-dy))) scale(0.25);
+  }
+}
+
+.sol-achievement {
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  transform: translateX(120%);
+  width: min(320px, 90vw);
+  z-index: 120;
+}
+
+.sol-achievement img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+.sol-achievement.is-showing {
+  animation: sol-achievement-slide 6s ease-in-out forwards;
+}
+
+@keyframes sol-achievement-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+
+  8% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  92% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+/* -------------------------------------------------------------- rules */
+
+.solitaire-rules-window {
+  width: min(92vw, 430px);
+}
+
+.solitaire-rules-window .window-body {
+  max-height: min(60vh, 360px);
+  overflow-y: auto;
+}
+
+.sol-rules-list {
+  line-height: 1.45;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.sol-rules-list li + li {
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .sol-board {
+    --sol-card-w: 54px;
+    --sol-card-h: 66px;
+    --sol-gap: 7px;
+    --sol-overlap: 18px;
+    padding: 8px;
+  }
+
+  .sol-slot-mark {
+    font-size: 18px;
+  }
+}

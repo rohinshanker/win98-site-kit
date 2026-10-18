@@ -1,0 +1,16 @@
+{
+  "id": "creative-work",
+  "kind": "app",
+  "title": "Creative Work",
+  "description": "Selector window for art, film and design: poster-sized carousels, an image-fit frame and link rows.",
+  "version": "1.0.0",
+  "files": [
+    "apps/creative-work/index.js",
+    "apps/creative-work/creative-work.css",
+    "assets/creative-work/poster-1.svg",
+    "assets/creative-work/poster-2.svg",
+    "assets/creative-work/poster-3.svg",
+    "assets/creative-work/logo.svg"
+  ],
+  "requires": []
+}

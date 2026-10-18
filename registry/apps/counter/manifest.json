@@ -1,0 +1,25 @@
+{
+  "id": "counter",
+  "kind": "app",
+  "title": "Counter",
+  "description": "Multi-player life counter with seven-segment totals, step buttons, initiative rolling and a window that widens one column at a time.",
+  "version": "1.0.0",
+  "files": [
+    "apps/counter/index.js",
+    "apps/counter/model.js",
+    "apps/counter/counter.css",
+    "assets/counter/digits/digital_0.png",
+    "assets/counter/digits/digital_1.png",
+    "assets/counter/digits/digital_2.png",
+    "assets/counter/digits/digital_3.png",
+    "assets/counter/digits/digital_4.png",
+    "assets/counter/digits/digital_5.png",
+    "assets/counter/digits/digital_6.png",
+    "assets/counter/digits/digital_7.png",
+    "assets/counter/digits/digital_8.png",
+    "assets/counter/digits/digital_9.png",
+    "assets/counter/digits/digital_minus.png",
+    "assets/counter/digits/digital_unlit.png"
+  ],
+  "requires": []
+}

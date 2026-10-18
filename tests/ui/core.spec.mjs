@@ -59,6 +59,9 @@ test("windows stack, drag, clamp and resize", async ({ page }) => {
   await expectWindowReachable(page, about);
 
   // Corner-resize Projects: the window shrinks and switches to the narrow layout.
+  // Raise it first (through the API, since the dragged About window may now
+  // cover its title bar) so nothing sits over its corner.
+  await page.evaluate(() => window.win98SiteKit.openWindow("projects"));
   const before = await projects.boundingBox();
   await page.mouse.move(before.x + before.width - 6, before.y + before.height - 6);
   await page.mouse.down();
@@ -93,7 +96,7 @@ test("selector tabs switch panels and carousels navigate", async ({ page }) => {
   await projects.locator('.selector-item[data-view="project-two"]').click();
   await expect(projects.locator('.viewer-content[data-view="project-two"]')).toBeVisible();
   await expect(projects.locator('.viewer-content[data-view="project-one"]')).toBeHidden();
-  const image = projects.locator('.viewer-content[data-view="project-two"] .gallery-scroll img');
+  const image = projects.locator('.viewer-content[data-view="project-two"] .gallery-scroll > img');
   await expect(image).toBeVisible();
   expect(await image.evaluate((img) => img.naturalWidth)).toBeGreaterThan(0);
   diagnostics.expectClean();

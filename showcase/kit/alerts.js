@@ -3,7 +3,6 @@
 // ("dismiss" when closed with the title-bar button or Escape).
 
 import {
-  DIALOG_INITIAL_FOCUS_SELECTOR,
   closeWindow,
   createWindow,
   destroyWindow,
@@ -94,6 +93,7 @@ export const showAlert = ({
       height: null,
       bodyClassName: "system-alert-body",
       bodyTabIndex: null,
+      alwaysOnTop: true,
     },
     render: () => renderAlert({ icon, body, image, buttons: normalizedButtons, buttonAlignment }),
     hooks: {
@@ -116,18 +116,16 @@ export const showAlert = ({
     });
   });
   if (!reusable) {
-    win.addEventListener("animationend", (event) => {
-      if (event.target === win && event.animationName === "retro-window-close") {
-        // Keep the registry honest: one-off alerts are removed once hidden.
-        destroyWindow(windowId);
-      }
-    });
+    // Keep the registry honest: one-off alerts are removed once hidden.
+    win.addEventListener("kit:windowhidden", () => destroyWindow(windowId), { once: true });
   }
   return new Promise((resolve) => {
     pendingResolvers.set(windowId, resolve);
     openWindow(windowId);
     requestAnimationFrame(() => {
-      win.querySelector(DIALOG_INITIAL_FOCUS_SELECTOR)?.focus({ preventScroll: true });
+      (win.querySelector("[data-alert-button].default") || win.querySelector("[data-alert-button]"))?.focus({
+        preventScroll: true,
+      });
     });
   });
 };

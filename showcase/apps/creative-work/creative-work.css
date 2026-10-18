@@ -1,0 +1,8 @@
+.creative-logo-frame {
+  margin-top: 12px;
+  width: min(100%, 320px);
+}
+
+.creative-logo-frame .image-fit-slot {
+  --image-fit-background: #fff;
+}

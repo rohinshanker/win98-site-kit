@@ -1,0 +1,15 @@
+{
+  "id": "snake",
+  "kind": "game",
+  "title": "Snake",
+  "description": "Radar-styled Snake on a CRT: four board sizes, snake and apple colours, keyboard and touch controls, local high scores.",
+  "version": "1.0.0",
+  "files": [
+    "apps/snake/index.js",
+    "apps/snake/rules.js",
+    "apps/snake/static-noise.js",
+    "apps/snake/snake.css",
+    "assets/snake/snake-logo.png"
+  ],
+  "requires": []
+}

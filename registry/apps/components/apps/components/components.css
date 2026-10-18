@@ -1,0 +1,373 @@
+/*
+ * components.css — layout for the Components demo: demo stages, code
+ * samples, the carousel grid, the icon browser and the spacing diagram.
+ * Widgets come from 98.css; spacing uses the kit.css tokens.
+ */
+
+.components-window {
+  width: min(92vw, 880px);
+  height: min(620px, calc(100vh - 96px));
+}
+
+/* ---------------------------------------------------------------- demos */
+
+.demo {
+  margin: 0 0 var(--window-gap);
+  min-width: 0;
+}
+
+.demo-caption {
+  margin: 0 0 8px;
+}
+
+.demo-stage {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  margin-bottom: 8px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.demo-stage--flush {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.demo-stage > * + *:not([class^="field-row"]) {
+  margin-top: 8px;
+}
+
+.demo-stage input[type="text"],
+.demo-stage select,
+.demo-stage textarea {
+  max-width: 100%;
+}
+
+.demo-stage input[type="text"],
+.demo-stage input[type="range"] {
+  flex: 1 1 80px;
+  min-width: 0;
+}
+
+.demo-stage textarea {
+  width: 100%;
+}
+
+/* 98.css draws the radio circle inside the label's left margin; inline
+   radios that follow another label need extra room before that circle. */
+.demo-stage .field-row > label + input[type="radio"] + label {
+  margin-left: calc(var(--radio-total-width) + 14px);
+}
+
+.demo-stage .sunken-panel table {
+  width: 100%;
+}
+
+.demo-stage .window[role="tabpanel"] {
+  width: 100%;
+}
+
+.demo-stage .window[role="tabpanel"] p {
+  margin: 0;
+}
+
+.demo-stage .status-bar p {
+  margin: 0;
+}
+
+.demo-stage--flush .gallery-frame {
+  margin-top: 0;
+}
+
+.demo-stage [data-carousel]:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: 2px;
+}
+
+.demo-carousels {
+  display: grid;
+  gap: var(--window-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  min-width: 0;
+}
+
+.demo-carousels .demo {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------- code samples */
+
+.code-sample {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+  max-height: 280px;
+  max-width: 100%;
+  overflow: auto;
+  padding: 8px;
+  tab-size: 2;
+  white-space: pre;
+}
+
+.code-sample::before {
+  color: #555;
+  content: attr(data-language);
+  display: block;
+  font-size: 10px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.code-sample code {
+  font-family: inherit;
+}
+
+.code-sample:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+/* ---------------------------------------------------------- option table */
+
+.option-table {
+  background: #fff;
+  box-shadow: var(--border-field);
+  font-size: 11px;
+  margin-bottom: var(--window-gap);
+  white-space: normal;
+  width: 100%;
+}
+
+.option-table > thead > tr > *,
+.option-table > tbody > tr > * {
+  height: auto;
+  padding: 3px 6px;
+  vertical-align: top;
+}
+
+/* ---------------------------------------------------------- icon browser */
+
+.icon-search-row input,
+.icon-path-row input {
+  flex: 1 1 80px;
+  min-width: 0;
+}
+
+.icon-path-row input {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.icon-grid {
+  background: #fff;
+  box-shadow: var(--border-field);
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  margin: 8px 0;
+  min-height: 120px;
+  padding: 6px;
+}
+
+.icon-cell {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #000;
+  display: grid;
+  font-size: 10px;
+  gap: 4px;
+  justify-items: center;
+  line-height: 1.2;
+  min-height: 0;
+  min-width: 0;
+  padding: 6px 2px;
+  text-shadow: none;
+}
+
+.icon-cell:hover,
+.icon-cell:focus-visible {
+  background: rgba(0, 0, 128, 0.15);
+  outline: 1px dotted #000;
+  outline-offset: -1px;
+}
+
+.icon-cell:active {
+  box-shadow: none;
+}
+
+.icon-cell.is-selected {
+  background: var(--dialog-blue);
+  color: #fff;
+}
+
+.icon-cell img {
+  height: 32px;
+  width: 32px;
+}
+
+.icon-cell span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.icon-grid-empty {
+  color: #555;
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px;
+  text-align: center;
+}
+
+.icon-pager {
+  align-items: center;
+  container-type: inline-size;
+  display: flex;
+  gap: var(--controls-gap);
+  margin-bottom: 8px;
+}
+
+.icon-pager button {
+  flex: 0 1 88px;
+  min-width: 72px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.icon-pager .gallery-counter {
+  flex: 1 1 64px;
+}
+
+@container (max-width: 320px) {
+  .icon-pager button {
+    flex-basis: 36px;
+    font-size: 0;
+    min-width: 36px;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .icon-pager button::before {
+    content: attr(data-icon-label);
+    font-size: 13px;
+  }
+}
+
+/* -------------------------------------------------------- spacing tokens */
+
+.token-list {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 var(--window-gap);
+}
+
+.token-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 150px) minmax(0, 1fr);
+}
+
+.token-row dt,
+.token-row dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.token-row dd {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.token-bar {
+  background: var(--dialog-blue);
+  display: inline-block;
+  flex: none;
+  height: 14px;
+}
+
+.token-note {
+  color: #333;
+  font-size: 11px;
+}
+
+.token-diagram {
+  display: flex;
+  flex-direction: column;
+}
+
+.token-diagram-panel {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  padding: 8px;
+}
+
+.token-diagram-panel--text {
+  font-size: 11px;
+  text-align: center;
+}
+
+.token-diagram-frame {
+  background: #f7cd4a;
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  padding: var(--frame-padding);
+}
+
+.token-diagram-slot {
+  background: #4ac0f7;
+  box-shadow: var(--border-field);
+  padding: var(--frame-inset);
+}
+
+.token-diagram-media {
+  align-items: center;
+  background: #fff;
+  display: flex;
+  font-size: 11px;
+  height: 56px;
+  justify-content: center;
+}
+
+.token-diagram-controls-gap {
+  background: #4ad26a;
+  height: var(--controls-gap);
+}
+
+.token-diagram-controls {
+  background: #4ad26a;
+  display: flex;
+  gap: var(--controls-gap);
+}
+
+.token-diagram-controls span {
+  background: var(--surface);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  flex: 1 1 0;
+  font-size: 11px;
+  min-height: 21px;
+  padding: 2px 8px;
+  text-align: center;
+}
+
+.token-diagram-window-gap {
+  background: #e04848;
+  height: var(--window-gap);
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 480px) {
+  .token-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .icon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  }
+}

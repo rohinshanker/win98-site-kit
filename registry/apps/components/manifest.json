@@ -1,0 +1,17 @@
+{
+  "id": "components",
+  "kind": "app",
+  "title": "Components",
+  "description": "Every reusable building block in one window: 98.css widgets, panels, carousels, alerts, window options, an icon browser and the spacing tokens, each with the snippet that reproduces it.",
+  "version": "1.0.0",
+  "files": [
+    "apps/components/index.js",
+    "apps/components/components.css",
+    "apps/components/icons.js",
+    "apps/components/sections.js",
+    "assets/components/slide-wide.svg",
+    "assets/components/portrait.svg",
+    "assets/components/poster.svg"
+  ],
+  "requires": []
+}

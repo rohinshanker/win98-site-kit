@@ -93,6 +93,7 @@ export const showAlert = ({
       height: null,
       bodyClassName: "system-alert-body",
       bodyTabIndex: null,
+      alwaysOnTop: true,
     },
     render: () => renderAlert({ icon, body, image, buttons: normalizedButtons, buttonAlignment }),
     hooks: {

@@ -1,0 +1,619 @@
+/* Snake: a 320px radar board on a CRT panel with readouts, a settings panel
+   and a touch pad; the rules window shares the phosphor-green styling. */
+
+.snake-window,
+.snake-rules-window {
+  --snake-green: #62ff78;
+}
+
+.snake-window {
+  width: min(92vw, 360px);
+}
+
+.snake-window .window-body {
+  min-height: 0;
+}
+
+.snake-app {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.snake-loading-panel {
+  background: #020403;
+  border: 1px solid rgba(98, 255, 120, 0.24);
+  box-shadow: inset 0 0 22px rgba(49, 158, 75, 0.24);
+  box-sizing: border-box;
+  color: var(--snake-green);
+  display: none;
+  font-family: "Courier New", monospace;
+  gap: 10px;
+  inset: 8px;
+  align-content: center;
+  overflow: hidden;
+  padding: 0 22px;
+  position: absolute;
+  text-shadow: 0 0 5px rgba(98, 255, 120, 0.55);
+  text-transform: uppercase;
+  z-index: 4;
+}
+
+.snake-window.is-snake-loading .snake-loading-panel {
+  display: grid;
+}
+
+.snake-loading-panel::before,
+.snake-loading-panel::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.snake-loading-panel::before {
+  background:
+    linear-gradient(rgba(98, 255, 120, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 255, 120, 0.035) 1px, transparent 1px);
+  background-size: 100% 3px, 10px 100%;
+  mix-blend-mode: screen;
+  opacity: 0.68;
+}
+
+.snake-loading-panel::after {
+  background:
+    radial-gradient(circle at 12% 30%, rgba(220, 255, 220, 0.12), transparent 1px),
+    radial-gradient(circle at 44% 72%, rgba(98, 255, 120, 0.12), transparent 1px),
+    radial-gradient(circle at 78% 22%, rgba(220, 255, 220, 0.1), transparent 1px);
+  background-size: 7px 7px, 11px 11px, 15px 15px;
+  opacity: 0.34;
+}
+
+.snake-loading-title,
+.snake-loading-status,
+.snake-loading-meter {
+  position: relative;
+  z-index: 1;
+}
+
+.snake-loading-title {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+.snake-loading-status {
+  align-items: center;
+  display: flex;
+  font-size: 10px;
+  justify-content: space-between;
+}
+
+.snake-loading-meter {
+  background: #010201;
+  border: 1px solid rgba(98, 255, 120, 0.34);
+  box-shadow:
+    inset 0 0 8px rgba(0, 0, 0, 0.72),
+    0 0 8px rgba(49, 158, 75, 0.16);
+  height: 18px;
+  overflow: hidden;
+}
+
+.snake-loading-meter-fill {
+  background:
+    linear-gradient(90deg, rgba(98, 255, 120, 0.94), rgba(202, 255, 211, 0.98)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.2) 0 2px,
+      transparent 2px 5px
+    );
+  box-shadow:
+    0 0 8px rgba(98, 255, 120, 0.52),
+    inset 0 0 5px rgba(255, 255, 255, 0.18);
+  height: 100%;
+  width: var(--snake-load-progress, 0%);
+}
+
+.snake-display {
+  background: #060b08;
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  box-sizing: border-box;
+  isolation: isolate;
+  justify-self: center;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 8px;
+  position: relative;
+  width: max-content;
+}
+
+/* The board is 320px square; on phones it shrinks with the window so the
+   readouts, panel and board never need a horizontal scrollbar. */
+.snake-screen {
+  aspect-ratio: 1 / 1;
+  background:
+    linear-gradient(rgba(98, 255, 120, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 255, 120, 0.1) 1px, transparent 1px),
+    #020403;
+  background-size: 16px 16px;
+  border: 1px solid #1d3a24;
+  box-sizing: border-box;
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: min(320px, calc(92vw - 38px));
+}
+
+.snake-noise-canvas {
+  display: block;
+  height: calc(100% - 16px);
+  image-rendering: pixelated;
+  inset: 8px;
+  opacity: 0.68;
+  pointer-events: none;
+  position: absolute;
+  width: calc(100% - 16px);
+  z-index: 3;
+}
+
+.snake-panel {
+  background: #020403;
+  border: 1px solid #1d3a24;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.08),
+    inset 0 0 16px rgba(49, 158, 75, 0.2),
+    0 0 10px rgba(49, 158, 75, 0.18);
+  box-sizing: border-box;
+  color: var(--snake-green);
+  display: grid;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  gap: 6px;
+  isolation: isolate;
+  justify-self: center;
+  overflow: hidden;
+  padding: 6px;
+  position: relative;
+  text-shadow: 0 0 5px rgba(98, 255, 120, 0.55);
+  text-transform: uppercase;
+  width: min(338px, 100%);
+}
+
+.snake-panel::before,
+.snake-panel::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.snake-panel::before {
+  background:
+    linear-gradient(rgba(98, 255, 120, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 255, 120, 0.04) 1px, transparent 1px);
+  background-size: 100% 4px, 12px 100%;
+  mix-blend-mode: screen;
+  opacity: 0.72;
+  z-index: 0;
+}
+
+.snake-panel::after {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(98, 255, 120, 0.14), transparent 1px),
+    radial-gradient(circle at 72% 42%, rgba(98, 255, 120, 0.12), transparent 1px),
+    radial-gradient(circle at 38% 78%, rgba(98, 255, 120, 0.1), transparent 1px);
+  background-size: 9px 9px, 13px 13px, 17px 17px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.snake-readouts {
+  align-items: center;
+  background: #020403;
+  border: 1px solid #1d3a24;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.08),
+    inset 0 0 10px rgba(49, 158, 75, 0.18),
+    0 0 7px rgba(49, 158, 75, 0.14);
+  box-sizing: border-box;
+  color: var(--snake-green);
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 1fr auto auto;
+  justify-self: center;
+  padding: 4px 6px;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 0 5px rgba(98, 255, 120, 0.55);
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: min(338px, 100%);
+  z-index: 1;
+}
+
+.snake-readouts::before,
+.snake-readouts::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.snake-readouts::before {
+  background:
+    linear-gradient(rgba(98, 255, 120, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 255, 120, 0.035) 1px, transparent 1px);
+  background-size: 100% 3px, 10px 100%;
+  mix-blend-mode: screen;
+  opacity: 0.66;
+}
+
+.snake-readouts::after {
+  background:
+    radial-gradient(circle at 12% 30%, rgba(220, 255, 220, 0.12), transparent 1px),
+    radial-gradient(circle at 44% 72%, rgba(98, 255, 120, 0.12), transparent 1px),
+    radial-gradient(circle at 78% 22%, rgba(220, 255, 220, 0.1), transparent 1px);
+  background-size: 7px 7px, 11px 11px, 15px 15px;
+  opacity: 0.38;
+}
+
+.snake-readouts > span {
+  position: relative;
+  z-index: 1;
+}
+
+.snake-options {
+  align-items: stretch;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: minmax(64px, 88px) minmax(0, 1fr) 88px;
+  position: relative;
+  z-index: 1;
+}
+
+.snake-panel-section {
+  border: 1px solid rgba(98, 255, 120, 0.22);
+  box-shadow: inset 0 0 8px rgba(49, 158, 75, 0.14);
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px;
+}
+
+.snake-section-label {
+  color: rgba(98, 255, 120, 0.78);
+  font-size: 10px;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.snake-setup-section {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.snake-setup-section .snake-section-label {
+  grid-column: auto;
+}
+
+.snake-setting-control {
+  align-items: center;
+  display: grid;
+  gap: 3px;
+}
+
+.snake-size-control {
+  grid-template-columns: 32px repeat(4, 18px);
+  justify-content: start;
+}
+
+.snake-panel .snake-size-control button {
+  align-items: center;
+  display: inline-flex;
+  font-size: 9px;
+  height: 18px;
+  justify-content: center;
+  line-height: 1;
+  min-height: 18px;
+  min-width: 18px;
+  padding-left: 0;
+  padding-right: 0;
+  width: 18px;
+}
+
+.snake-color-control {
+  grid-template-columns: 32px repeat(4, 18px);
+  justify-content: start;
+}
+
+.snake-panel .snake-color-button {
+  align-items: center;
+  display: inline-flex;
+  height: 18px;
+  justify-content: center;
+  min-height: 18px;
+  min-width: 18px;
+  padding: 2px;
+  width: 18px;
+}
+
+.snake-color-swatch {
+  background: var(--snake-swatch);
+  box-shadow: 0 0 5px var(--snake-swatch-glow);
+  display: block;
+  height: 10px;
+  margin: 0 auto;
+  width: 10px;
+}
+
+.snake-color-button[data-snake-color="green"] {
+  --snake-swatch: var(--snake-green);
+  --snake-swatch-glow: rgba(98, 255, 120, 0.72);
+}
+
+.snake-color-button[data-snake-apple-color="green"] {
+  --snake-swatch: var(--snake-green);
+  --snake-swatch-glow: rgba(98, 255, 120, 0.72);
+}
+
+.snake-color-button[data-snake-color="purple"] {
+  --snake-swatch: #c77dff;
+  --snake-swatch-glow: rgba(199, 125, 255, 0.72);
+}
+
+.snake-color-button[data-snake-apple-color="purple"] {
+  --snake-swatch: #c77dff;
+  --snake-swatch-glow: rgba(199, 125, 255, 0.72);
+}
+
+.snake-color-button[data-snake-color="red"] {
+  --snake-swatch: #ff6257;
+  --snake-swatch-glow: rgba(255, 98, 87, 0.72);
+}
+
+.snake-color-button[data-snake-apple-color="red"] {
+  --snake-swatch: #ff6257;
+  --snake-swatch-glow: rgba(255, 98, 87, 0.72);
+}
+
+.snake-color-button[data-snake-color="blue"] {
+  --snake-swatch: #65b7ff;
+  --snake-swatch-glow: rgba(101, 183, 255, 0.72);
+}
+
+.snake-color-button[data-snake-apple-color="blue"] {
+  --snake-swatch: #65b7ff;
+  --snake-swatch-glow: rgba(101, 183, 255, 0.72);
+}
+
+.snake-panel button {
+  background: #020403;
+  border: 1px solid #1d3a24;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.08),
+    0 0 5px rgba(49, 158, 75, 0.16);
+  color: var(--snake-green);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  min-height: 20px;
+  text-shadow: 0 0 5px rgba(98, 255, 120, 0.55);
+  text-transform: uppercase;
+}
+
+.snake-panel button:hover {
+  background: #061108;
+}
+
+.snake-panel button.is-selected {
+  background: #0b1b0e;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.24),
+    inset 0 0 8px rgba(98, 255, 120, 0.22),
+    0 0 7px rgba(98, 255, 120, 0.2);
+}
+
+.snake-panel button:active {
+  background: #0b1b0e;
+  box-shadow: inset 0 0 7px rgba(98, 255, 120, 0.26);
+}
+
+.snake-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.snake-actions button {
+  font-size: 9px;
+  min-height: 18px;
+  min-width: 0;
+  padding-left: 1px;
+  padding-right: 1px;
+  width: 100%;
+}
+
+.snake-actions .snake-help-button {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.snake-rules-window {
+  width: min(92vw, 430px);
+}
+
+.snake-rules-window .window-body {
+  background: var(--surface);
+  min-height: 0;
+}
+
+.snake-rules-panel {
+  background: #020403;
+  border: 1px solid #1d3a24;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.08),
+    inset 0 0 20px rgba(49, 158, 75, 0.22),
+    0 0 10px rgba(49, 158, 75, 0.18);
+  box-sizing: border-box;
+  color: var(--snake-green);
+  display: grid;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  gap: 10px;
+  max-height: min(62vh, 390px);
+  overflow: auto;
+  padding: 12px;
+  position: relative;
+  text-shadow: 0 0 5px rgba(98, 255, 120, 0.55);
+  text-transform: uppercase;
+}
+
+.snake-rules-panel::before,
+.snake-rules-panel::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.snake-rules-panel::before {
+  background:
+    linear-gradient(rgba(98, 255, 120, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 255, 120, 0.04) 1px, transparent 1px);
+  background-size: 100% 4px, 12px 100%;
+  mix-blend-mode: screen;
+  opacity: 0.72;
+}
+
+.snake-rules-panel::after {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(98, 255, 120, 0.13), transparent 1px),
+    radial-gradient(circle at 68% 44%, rgba(98, 255, 120, 0.1), transparent 1px),
+    radial-gradient(circle at 42% 80%, rgba(220, 255, 220, 0.1), transparent 1px);
+  background-size: 9px 9px, 13px 13px, 17px 17px;
+  opacity: 0.3;
+}
+
+.snake-rules-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.snake-rules-title {
+  border: 1px solid rgba(98, 255, 120, 0.22);
+  box-shadow: inset 0 0 8px rgba(49, 158, 75, 0.14);
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px;
+}
+
+.snake-rules-section {
+  border: 1px solid rgba(98, 255, 120, 0.22);
+  box-shadow: inset 0 0 8px rgba(49, 158, 75, 0.14);
+  display: grid;
+  gap: 6px;
+  padding: 7px;
+}
+
+.snake-rules-section-title {
+  color: rgba(98, 255, 120, 0.78);
+  font-size: 10px;
+}
+
+.snake-keybind-list,
+.snake-rules-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.snake-keybind-list {
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.snake-keybind-list dt,
+.snake-keybind-list dd {
+  margin: 0;
+}
+
+.snake-keybind-list dd,
+.snake-rules-list li {
+  color: rgba(202, 255, 211, 0.92);
+}
+
+.snake-rules-list {
+  padding-left: 18px;
+}
+
+.snake-rules-panel kbd {
+  background: #020403;
+  border: 1px solid #1d3a24;
+  box-shadow:
+    inset 0 0 0 1px rgba(98, 255, 120, 0.08),
+    0 0 5px rgba(49, 158, 75, 0.16);
+  color: var(--snake-green);
+  display: inline-block;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  line-height: 1;
+  margin-right: 3px;
+  min-width: 18px;
+  padding: 3px 4px;
+  text-align: center;
+}
+
+.snake-control-section {
+  justify-content: center;
+}
+
+.snake-pad {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(3, 24px);
+}
+
+.snake-pad button {
+  align-items: center;
+  display: inline-flex;
+  height: 22px;
+  justify-content: center;
+  min-height: 22px;
+  min-width: 24px;
+  padding: 0;
+}
+
+.snake-pad button::before {
+  border-color: transparent;
+  border-style: solid;
+  content: "";
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(98, 255, 120, 0.62));
+  height: 0;
+  width: 0;
+}
+
+.snake-pad button[data-snake-direction="up"]::before {
+  border-bottom-color: var(--snake-green);
+  border-width: 0 6px 8px;
+}
+
+.snake-pad button[data-snake-direction="down"]::before {
+  border-top-color: var(--snake-green);
+  border-width: 8px 6px 0;
+}
+
+.snake-pad button[data-snake-direction="left"]::before {
+  border-right-color: var(--snake-green);
+  border-width: 6px 8px 6px 0;
+}
+
+.snake-pad button[data-snake-direction="right"]::before {
+  border-left-color: var(--snake-green);
+  border-width: 6px 0 6px 8px;
+}
+
+.snake-pad-spacer {
+  height: 22px;
+  width: 24px;
+}
