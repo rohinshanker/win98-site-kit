@@ -91,7 +91,11 @@ export const createRegistry = async ({ base = "", fetchImpl = globalThis.fetch }
       if (!(await isDirectory(dir))) continue;
       for (const entry of (await readdir(dir, { withFileTypes: true })).filter((d) => d.isDirectory())) {
         const manifestPath = path.join(dir, entry.name, "manifest.json");
-        const manifest = validateManifest(JSON.parse(await readFile(manifestPath, "utf8")), manifestPath);
+        // A folder without a manifest is not a package yet (work in progress);
+        // tests/registry.test.mjs flags it, the CLI simply does not offer it.
+        const raw = await readFile(manifestPath, "utf8").catch(() => null);
+        if (raw === null) continue;
+        const manifest = validateManifest(JSON.parse(raw), manifestPath);
         packages.push({
           id: manifest.id,
           kind: manifest.kind,

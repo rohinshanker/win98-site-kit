@@ -2,7 +2,7 @@
 // validated values. Unknown shapes throw at boot with a readable message.
 
 const BACKGROUND_MODES = new Set(["image", "color", "time-of-day"]);
-const DATE_KEY = /^(?:\d{4}-)?\d{2}-\d{2}$/;
+const DATE_KEY = /^(?:\d{4}-)?(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/;
 
 const assertString = (value, label) => {
   if (typeof value !== "string" || !value.trim()) {
