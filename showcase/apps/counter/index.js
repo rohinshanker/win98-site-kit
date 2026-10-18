@@ -93,21 +93,26 @@ const createController = (win, body) => {
   });
   increaseButton.textContent = "+";
 
+  /** Widening is allowed whenever the viewport can hold the wider window. */
+  const maxWidthInViewport = () => model.maxWidthAtPosition(window.innerWidth);
+
   const updateWidthControls = () => {
     syncInitiativeToolbar();
     const currentColumns = model.columnsForWidth(windowWidth());
     decreaseButton.disabled = currentColumns <= 1;
-    increaseButton.disabled = model.widthForColumns(currentColumns + 1) > maxWidthAtPosition();
+    increaseButton.disabled = model.widthForColumns(currentColumns + 1) > maxWidthInViewport();
   };
 
   const setWindowColumns = (direction) => {
     const nextColumns = model.columnsForWidth(windowWidth()) + direction;
     const nextWidth = model.widthForColumns(nextColumns);
-    if (nextColumns < 1 || nextWidth > maxWidthAtPosition()) {
+    if (nextColumns < 1 || nextWidth > maxWidthInViewport()) {
       updateWidthControls();
       return;
     }
     win.style.width = `${nextWidth}px`;
+    // A window near the right edge slides left rather than growing off screen.
+    if (nextWidth > maxWidthAtPosition()) clampIntoViewport(win);
     storage.writeJson(COLUMNS_KEY, nextColumns);
     updateWidthControls();
   };

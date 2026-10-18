@@ -482,14 +482,16 @@ button.sol-card:not(:disabled):active {
 
 @media (max-width: 640px) {
   .sol-board {
-    --sol-card-w: 54px;
-    --sol-card-h: 66px;
-    --sol-gap: 7px;
-    --sol-overlap: 18px;
+    /* Seven cards plus six gaps must fit the window body: viewport minus the
+       window margins, frame, body and board padding (62px) and the gaps. */
+    --sol-gap: 5px;
+    --sol-card-w: min(54px, calc((100vw - 62px - 6 * var(--sol-gap)) / 7));
+    --sol-card-h: calc(var(--sol-card-w) * 66 / 54);
+    --sol-overlap: max(14px, calc(var(--sol-card-w) / 3));
     padding: 8px;
   }
 
   .sol-slot-mark {
-    font-size: 18px;
+    font-size: min(18px, calc(var(--sol-card-w) / 3));
   }
 }

@@ -65,7 +65,7 @@ test("opens a folder, previews a PDF and shows it in the viewer window", async (
   const mainFrame = win.locator(".study-pdf-main iframe");
   await expect(mainFrame).toHaveAttribute("src", /sample-notes\.pdf#page=1/);
   await expect(win.locator(".study-pdf-thumbnail")).toHaveCount(1);
-  await expect(win.locator('[data-study-part="status-left"]')).toHaveText("1 object, 632 B");
+  await expect(win.locator('[data-study-part="status-left"]')).toHaveText("1 object, 1.1 KB");
   await expect(win.locator('[data-study-action="open-window"]')).toBeEnabled();
   await expect(win.locator('[data-study-action="open-tab"]')).toBeEnabled();
   await expect(win.locator('[data-study-action="download"]')).toBeEnabled();

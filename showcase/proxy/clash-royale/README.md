@@ -5,7 +5,8 @@ Clash Royale API, which needs a secret developer key. This folder is the one
 server-side piece in the kit: a tiny Cloudflare Worker that holds the key,
 calls the API for one player and returns only the fields the window shows.
 Nothing else in the site depends on it; skip it and the window shows setup
-steps instead.
+steps instead. A live version of the window, backed by this proxy, runs on
+[rohin.shanker.me](https://rohin.shanker.me/).
 
 Files:
 

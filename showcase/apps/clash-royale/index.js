@@ -61,7 +61,9 @@ const setupNoticeHtml = () => `
   <section class="cr-setup" id="cr-setup" aria-labelledby="cr-setup-heading">
     <h2 class="cr-section-title" id="cr-setup-heading">Set up Clash Royale Stats</h2>
     <p>This window shows a player's profile, current deck and recent battles from the
-      official Clash Royale API. The API needs a secret key, so a small proxy
+      official Clash Royale API. A live version runs on
+      <a href="https://rohin.shanker.me/" target="_blank" rel="noopener noreferrer">rohin.shanker.me</a>
+      (open Clash Royale Stats there). The API needs a secret key, so a small proxy
       (the only server-side piece in the kit) keeps it off the page. One-time setup:</p>
     <ol class="cr-setup-steps">
       <li>Create an API key at <a href="https://developer.clashroyale.com/" target="_blank" rel="noopener noreferrer">developer.clashroyale.com</a>

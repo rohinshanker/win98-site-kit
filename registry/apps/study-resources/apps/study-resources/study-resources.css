@@ -579,8 +579,9 @@
   }
 
   .study-file-pane {
-    --study-file-columns: 22px minmax(118px, 1fr) 74px 54px 54px;
-    --study-list-width: max(100%, 420px);
+    /* Name and Type only: the Items and Size columns hide so nothing clips. */
+    --study-file-columns: 22px minmax(0, 1fr) 74px;
+    --study-list-width: 100%;
   }
 
   .study-file-pane.is-gallery {
@@ -605,5 +606,13 @@
 
   .study-preview-actions {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .study-file-list-header > :nth-child(n + 4),
+  .study-file-pane.is-list .study-file-subitems,
+  .study-file-pane.is-list .study-file-storage {
+    display: none;
   }
 }

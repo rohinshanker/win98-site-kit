@@ -15,7 +15,7 @@ export default [
         name: "Sample Notes.pdf",
         type: "pdf",
         href: "assets/study-resources/sample-notes.pdf",
-        size: 632,
+        size: 1150,
         pages: 1,
       },
     ],
@@ -28,7 +28,7 @@ export default [
         name: "Sample Cheat Sheet.pdf",
         type: "pdf",
         href: "assets/study-resources/sample-cheatsheet.pdf",
-        size: 632,
+        size: 1014,
         pages: 1,
       },
       {

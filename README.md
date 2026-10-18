@@ -3,7 +3,8 @@
 Build a Windows 98 style desktop website in minutes: draggable windows, a
 dock, a calendar, carousels, system alerts, 98.css, 626 Windows icons, and
 downloadable apps and games, with no build step and no backend. It is the
-reusable core of [rohin.shanker.me](https://rohin.shanker.me/).
+reusable core of [rohin.shanker.me](https://rohin.shanker.me/), whose source
+lives at [rohinshanker/personal-website](https://github.com/rohinshanker/personal-website).
 
 **Showcase:** open `showcase/index.html` from a local server (see below) to
 see every app, game and component in one desktop.

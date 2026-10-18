@@ -1164,7 +1164,7 @@ body.is-resizing-window * {
   gap: 10px;
 }
 
-.icon-list a,
+.icon-list > li > a,
 .icon-list .icon-list-row {
   display: flex;
   align-items: center;

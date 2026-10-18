@@ -18,7 +18,7 @@ export default {
       </li>
       <li class="icon-list-row">
         <img src="assets/app-icons/ico/world.ico" alt="" />
-        <span>Desktop kit by <a href="https://github.com/rohinshanker/win98-site-kit" target="_blank" rel="noreferrer">rohinshanker/win98-site-kit</a>, extracted from <a href="https://rohin.shanker.me/" target="_blank" rel="noreferrer">rohin.shanker.me</a></span>
+        <span>Built with <a href="https://github.com/rohinshanker/win98-site-kit" target="_blank" rel="noreferrer">win98-site-kit</a>, the desktop from <a href="https://rohin.shanker.me/" target="_blank" rel="noreferrer">rohin.shanker.me</a></span>
       </li>
       <li class="icon-list-row">
         <img src="assets/backgrounds/mountain-and-sky.png" alt="" />
