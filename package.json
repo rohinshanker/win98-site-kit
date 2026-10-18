@@ -1,0 +1,41 @@
+{
+  "name": "win98-site-kit",
+  "version": "0.1.0",
+  "description": "Starter kit and CLI for Windows 98 style desktop websites: window manager, dock, calendar, carousels, 98.css, Windows icons, and downloadable games and apps.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohinshanker/win98-site-kit.git"
+  },
+  "homepage": "https://github.com/rohinshanker/win98-site-kit#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "win98-site-kit": "bin/win98-site-kit.mjs"
+  },
+  "files": [
+    "bin",
+    "cli",
+    "registry",
+    "template",
+    "AGENTS.md",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:ui": "playwright test",
+    "serve": "node bin/win98-site-kit.mjs serve showcase",
+    "serve:template": "node bin/win98-site-kit.mjs serve template",
+    "showcase:build": "node scripts/build-showcase.mjs",
+    "showcase:check": "node scripts/build-showcase.mjs --check",
+    "syntax:check": "node scripts/syntax-check.mjs",
+    "check": "npm run syntax:check && npm run showcase:check && npm test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.55.0"
+  }
+}

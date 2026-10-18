@@ -1,0 +1,13 @@
+{
+  "id": "writing",
+  "kind": "app",
+  "title": "Writing",
+  "description": "Selector window for essays and papers: a list of pieces with a summary, action links and a slide carousel each.",
+  "version": "1.0.0",
+  "files": [
+    "apps/writing/index.js",
+    "assets/writing/sample-slide-1.svg",
+    "assets/writing/sample-slide-2.svg"
+  ],
+  "requires": []
+}

@@ -1,0 +1,40 @@
+.display-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.display-choice {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 4px;
+}
+
+.display-choice[aria-checked="true"] {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  background-image: repeating-conic-gradient(var(--button-highlight) 0 25%, transparent 0 50%);
+  background-size: 2px 2px;
+}
+
+.display-swatch {
+  display: block;
+  width: 72px;
+  height: 48px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--border-field);
+}
+
+.display-choice-label {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.display-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}

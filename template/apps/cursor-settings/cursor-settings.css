@@ -1,0 +1,25 @@
+.cursor-window-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cursor-window-option .field-row {
+  margin: 0;
+}
+
+.cursor-window-option button[aria-pressed="true"] {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  background-image: repeating-conic-gradient(var(--button-highlight) 0 25%, transparent 0 50%);
+  background-size: 2px 2px;
+}
+
+.cursor-settings-note {
+  margin: 12px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.cursor-settings-note code {
+  font-family: monospace;
+}

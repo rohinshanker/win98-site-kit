@@ -1,0 +1,107 @@
+/*
+ * cursors.css — custom cursor tokens. Nothing here applies until
+ * kit/cursor.js adds `is-custom-cursor-ready` to <html>, which only happens
+ * when site.config.js sets cursor.enabled and a pack exists under
+ * assets/cursors/light (and optionally assets/cursors/dark). The expected
+ * file names are listed in assets/cursors/README.md.
+ */
+
+:root {
+  --cursor-normal: url("../assets/cursors/light/normal.cur"), auto;
+  --cursor-select: url("../assets/cursors/light/select.cur"), pointer;
+  --cursor-text: url("../assets/cursors/light/text.cur"), text;
+  --cursor-move: url("../assets/cursors/light/move.cur"), move;
+  --cursor-help: url("../assets/cursors/light/help.cur"), help;
+  --cursor-unavailable: url("../assets/cursors/light/unavailable.cur"), not-allowed;
+  --cursor-precision: url("../assets/cursors/light/precision.cur"), crosshair;
+  --cursor-resize-ew: url("../assets/cursors/light/resize-ew.cur"), ew-resize;
+  --cursor-resize-ns: url("../assets/cursors/light/resize-ns.cur"), ns-resize;
+  --cursor-resize-nwse: url("../assets/cursors/light/resize-nwse.cur"), nwse-resize;
+  --cursor-resize-nesw: url("../assets/cursors/light/resize-nesw.cur"), nesw-resize;
+  --cursor-busy: url("../assets/cursors/light/busy.ani"), wait;
+  --cursor-working: url("../assets/cursors/light/working.ani"), progress;
+}
+
+html.is-cursor-dark-mode {
+  --cursor-normal: url("../assets/cursors/dark/normal.cur"), auto;
+  --cursor-select: url("../assets/cursors/dark/select.cur"), pointer;
+  --cursor-text: url("../assets/cursors/dark/text.cur"), text;
+  --cursor-move: url("../assets/cursors/dark/move.cur"), move;
+  --cursor-help: url("../assets/cursors/dark/help.cur"), help;
+  --cursor-unavailable: url("../assets/cursors/dark/unavailable.cur"), not-allowed;
+  --cursor-precision: url("../assets/cursors/dark/precision.cur"), crosshair;
+  --cursor-resize-ew: url("../assets/cursors/dark/resize-ew.cur"), ew-resize;
+  --cursor-resize-ns: url("../assets/cursors/dark/resize-ns.cur"), ns-resize;
+  --cursor-resize-nwse: url("../assets/cursors/dark/resize-nwse.cur"), nwse-resize;
+  --cursor-resize-nesw: url("../assets/cursors/dark/resize-nesw.cur"), nesw-resize;
+  --cursor-busy: url("../assets/cursors/dark/busy.ani"), wait;
+  --cursor-working: url("../assets/cursors/dark/working.ani"), progress;
+}
+
+/* Base: everything uses the normal arrow. Zero specificity so the semantic
+   rules below win by order alone. */
+html.is-custom-cursor-ready :where(body, body *) {
+  cursor: var(--cursor-normal);
+}
+
+/* Semantic tokens, in precedence order. */
+html.is-custom-cursor-ready :where(a[href], button, [role="button"], summary, label, select, .desktop-icon, .taskbar-icon, .selector-item, input[type="checkbox"], input[type="radio"], input[type="range"], .calendar-day.is-event-day) {
+  cursor: var(--cursor-select);
+}
+
+html.is-custom-cursor-ready :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="button"]):not([type="submit"]), textarea, [contenteditable="true"]) {
+  cursor: var(--cursor-text);
+}
+
+html.is-custom-cursor-ready :where(.title-bar:not([data-no-drag] .title-bar), .title-bar:not([data-no-drag] .title-bar) *) {
+  cursor: var(--cursor-move);
+}
+
+html.is-custom-cursor-ready :where(.title-bar-controls button) {
+  cursor: var(--cursor-select);
+}
+
+html.is-custom-cursor-ready :where(.title-bar-controls button[aria-label="Help"]) {
+  cursor: var(--cursor-help);
+}
+
+html.is-custom-cursor-ready :where(.panel-divider) {
+  cursor: var(--cursor-resize-ew);
+}
+
+html.is-custom-cursor-ready :where(.app-window.is-resize-hover, .app-window.is-resize-hover *, .app-window.is-manual-resizing, .app-window.is-manual-resizing *, body.is-resizing-window, body.is-resizing-window *) {
+  cursor: var(--cursor-resize-nwse) !important;
+}
+
+html.is-custom-cursor-ready :where(button:disabled, [aria-disabled="true"], input:disabled, select:disabled, textarea:disabled) {
+  cursor: var(--cursor-unavailable);
+}
+
+/* Working cursor while kit/cursor.js observeLoading predicates are true. */
+html.is-custom-cursor-ready.is-custom-cursor-loading,
+html.is-custom-cursor-ready.is-custom-cursor-loading body,
+html.is-custom-cursor-ready.is-custom-cursor-loading body * {
+  cursor: var(--cursor-working) !important;
+}
+
+/* Optional frame-by-frame animation: add working-1.png … working-9.png to a
+   pack to animate the working cursor in browsers that ignore .ani files. */
+html.is-custom-cursor-loading-frame-1 { --cursor-working: url("../assets/cursors/light/working-1.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-2 { --cursor-working: url("../assets/cursors/light/working-2.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-3 { --cursor-working: url("../assets/cursors/light/working-3.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-4 { --cursor-working: url("../assets/cursors/light/working-4.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-5 { --cursor-working: url("../assets/cursors/light/working-5.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-6 { --cursor-working: url("../assets/cursors/light/working-6.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-7 { --cursor-working: url("../assets/cursors/light/working-7.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-8 { --cursor-working: url("../assets/cursors/light/working-8.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+html.is-custom-cursor-loading-frame-9 { --cursor-working: url("../assets/cursors/light/working-9.png") 2 1, url("../assets/cursors/light/working.ani"), progress; }
+
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-1 { --cursor-working: url("../assets/cursors/dark/working-1.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-2 { --cursor-working: url("../assets/cursors/dark/working-2.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-3 { --cursor-working: url("../assets/cursors/dark/working-3.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-4 { --cursor-working: url("../assets/cursors/dark/working-4.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-5 { --cursor-working: url("../assets/cursors/dark/working-5.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-6 { --cursor-working: url("../assets/cursors/dark/working-6.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-7 { --cursor-working: url("../assets/cursors/dark/working-7.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-8 { --cursor-working: url("../assets/cursors/dark/working-8.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }
+html.is-cursor-dark-mode.is-custom-cursor-loading-frame-9 { --cursor-working: url("../assets/cursors/dark/working-9.png") 2 1, url("../assets/cursors/dark/working.ani"), progress; }

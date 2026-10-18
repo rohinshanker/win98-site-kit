@@ -1,0 +1,1279 @@
+/*
+ * kit.css — desktop shell, windows, taskbar, calendar, carousels, selector
+ * windows and system alerts. 98.css supplies the widget look; this file
+ * supplies layout. Spacing tokens live on :root so apps can reuse them.
+ */
+
+:root {
+  --desktop-background-image: none;
+  --desktop-background-color: #008080;
+  --desktop-icon-size: 40px;
+  --taskbar-height: 52px;
+  --window-gap: 12px;          /* space between panels inside a window body */
+  --frame-padding: 6px;        /* sunken frame around media and panels */
+  --frame-inset: 2px;          /* white field inset inside a frame */
+  --controls-gap: 8px;         /* between carousel buttons and the counter */
+  --font-digital: "Digital-7", "DS-Digital", "Share Tech Mono", "Courier New", monospace;
+}
+
+@font-face {
+  font-family: "Digital-7";
+  src: url("../assets/fonts/digital-7/digital-7.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+html {
+  min-height: 100%;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--desktop-background-color);
+  background-image: var(--desktop-background-image);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding-bottom: calc(var(--taskbar-height) + 4px);
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+.boot-error {
+  position: fixed;
+  inset: 16px auto auto 16px;
+  z-index: 10000;
+  max-width: calc(100vw - 32px);
+  padding: 12px;
+  background: #fff;
+  color: #800000;
+  white-space: pre-wrap;
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+}
+
+/* ---------------------------------------------------------------- desktop */
+
+.desktop {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  bottom: calc(var(--taskbar-height) + 16px);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  row-gap: 8px;
+  column-gap: 6px;
+  max-width: calc(100vw - 32px);
+}
+
+.desktop-icon {
+  width: 64px;
+  height: 68px;
+  min-width: 64px;
+  display: grid;
+  grid-template-rows: 44px 24px;
+  align-items: start;
+  justify-items: center;
+  text-align: center;
+  color: #fff;
+  font-size: 11px;
+  line-height: 12px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  appearance: none;
+  min-height: 0;
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus-visible {
+  background: rgba(0, 0, 128, 0.35);
+  outline: 1px dotted #fff;
+  outline-offset: 2px;
+}
+
+.desktop-icon:active {
+  background: rgba(0, 0, 128, 0.6);
+}
+
+.desktop-icon:focus {
+  outline: none;
+}
+
+.desktop-icon:focus-visible {
+  outline: 1px dotted #fff;
+}
+
+.desktop-icon img {
+  width: var(--desktop-icon-size);
+  height: var(--desktop-icon-size);
+  display: block;
+  margin: 0 auto;
+}
+
+.desktop-icon img.is-pixelated,
+.taskbar-icon img.is-pixelated {
+  image-rendering: pixelated;
+}
+
+.desktop-icon-label {
+  display: block;
+  width: 100%;
+  height: 24px;
+  line-height: 12px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- taskbar */
+
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--taskbar-height);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface);
+  box-shadow: inset 0 1px var(--button-highlight), inset 0 -1px var(--button-shadow);
+  color: #000;
+  z-index: 500;
+}
+
+.taskbar-apps {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.taskbar-apps::-webkit-scrollbar {
+  display: none;
+}
+
+.start-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  min-width: 0;
+  padding: 0 14px 0 6px;
+  border: none;
+  background: var(--surface);
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  white-space: nowrap;
+}
+
+.start-button:active {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+.start-button img {
+  width: 22px;
+  height: 22px;
+  margin-left: -2px;
+}
+
+.taskbar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.taskbar-icon:hover,
+.taskbar-icon:focus-visible {
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+}
+
+.taskbar-icon.is-open,
+.taskbar-icon:active {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  background-image: repeating-conic-gradient(var(--button-highlight) 0 25%, transparent 0 50%);
+  background-size: 2px 2px;
+}
+
+.taskbar-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.taskbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 4px 8px;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  border: none;
+  cursor: pointer;
+}
+
+.taskbar-divider {
+  width: 2px;
+  height: 28px;
+  flex: none;
+  background: var(--button-shadow);
+  box-shadow: inset 1px 0 var(--button-highlight);
+}
+
+.taskbar-clock {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- windows */
+
+.window-stack {
+  position: relative;
+  z-index: 2;
+}
+
+.app-window {
+  position: fixed;
+  top: 90px;
+  left: 140px;
+  width: min(80vw, 420px);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - var(--taskbar-height) - 16px);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  transform-origin: center center;
+  will-change: opacity, clip-path, scale, filter, translate;
+}
+
+.app-window.is-hidden {
+  display: none;
+}
+
+.app-window--center {
+  top: 25%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.app-window .window-body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.app-window.is-opening {
+  animation: retro-window-open 260ms steps(7, end) both;
+}
+
+.app-window.is-closing {
+  pointer-events: none;
+  animation: retro-window-close 180ms steps(7, end) both;
+}
+
+.title-bar {
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+[data-no-drag] .title-bar {
+  cursor: default;
+}
+
+.title-bar-text,
+.title-bar-controls {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.window-body p {
+  margin: 0 0 12px;
+}
+
+.window-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Corner-resizable windows (selector windows and anything with window.resizable). */
+.app-window.is-corner-resizable {
+  min-height: min(220px, calc(100vh - 96px));
+  min-width: min(280px, calc(100vw - 24px));
+}
+
+.app-window.is-corner-resizable::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 12px;
+  height: 12px;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 2px,
+    var(--button-shadow) 2px 3px,
+    var(--button-highlight) 3px 4px
+  );
+  pointer-events: none;
+}
+
+.app-window.is-resize-hover,
+.app-window.is-resize-hover *,
+.app-window.is-manual-resizing,
+.app-window.is-manual-resizing * {
+  cursor: nwse-resize !important;
+  user-select: none;
+}
+
+body.is-resizing-window,
+body.is-resizing-window *,
+body.is-dragging-window .title-bar {
+  user-select: none;
+}
+
+body.is-resizing-window,
+body.is-resizing-window * {
+  cursor: nwse-resize !important;
+}
+
+@keyframes retro-window-open {
+  0% {
+    opacity: 0;
+    scale: 0.04 0.02;
+    clip-path: inset(49.5% 47% 49.5% 47%);
+    filter: brightness(2.8) contrast(2.1);
+  }
+  38% {
+    opacity: 1;
+    scale: 1 0.04;
+    clip-path: inset(49% 0 49% 0);
+    filter: brightness(2.6) contrast(1.9);
+  }
+  72% {
+    opacity: 1;
+    scale: 1.03 1.02;
+    clip-path: inset(0 0 0 0);
+    filter: brightness(1.15) contrast(1.05);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    clip-path: inset(0 0 0 0);
+    filter: none;
+  }
+}
+
+@keyframes retro-window-close {
+  0% {
+    opacity: 1;
+    scale: 1;
+    clip-path: inset(0 0 0 0);
+    filter: none;
+  }
+  54% {
+    opacity: 1;
+    scale: 1 0.04;
+    clip-path: inset(49% 0 49% 0);
+    filter: brightness(2.6) contrast(1.9);
+  }
+  82% {
+    opacity: 1;
+    scale: 0.06 0.02;
+    clip-path: inset(49.5% 47% 49.5% 47%);
+    filter: brightness(3) contrast(2.2);
+  }
+  100% {
+    opacity: 0;
+    scale: 0;
+    clip-path: inset(50% 50% 50% 50%);
+    filter: brightness(3.2) contrast(2.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-window.is-opening,
+  .app-window.is-closing {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------- system alerts */
+
+.system-alert-window {
+  width: min(340px, calc(100vw - 32px));
+  z-index: 140;
+}
+
+.system-alert-window.app-window--center {
+  top: 50%;
+}
+
+.system-alert-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.system-alert-message {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 50px 1fr;
+}
+
+.system-alert-message img {
+  height: 48px;
+  width: 48px;
+}
+
+.system-alert-copy p {
+  margin: 0;
+}
+
+.system-alert-image {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  padding: var(--frame-padding);
+}
+
+.system-alert-image img {
+  display: block;
+  width: 100%;
+  max-height: 50vh;
+  object-fit: contain;
+  background: #fff;
+  box-shadow: var(--border-field);
+  padding: var(--frame-inset);
+}
+
+.system-alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.system-alert-actions button {
+  min-width: 74px;
+}
+
+.system-alert-actions[data-button-alignment="left"] {
+  justify-content: flex-start;
+}
+
+.system-alert-actions[data-button-alignment="center"] {
+  justify-content: center;
+}
+
+/* --------------------------------------------------------- selector window */
+
+.selector-window {
+  width: min(90vw, 680px);
+  height: min(520px, calc(100vh - 96px));
+}
+
+.selector-window .window-body {
+  display: flex;
+  gap: var(--window-gap);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.selector-panel,
+.viewer-panel {
+  padding: 8px;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  min-height: 0;
+  min-width: 0;
+}
+
+.selector-panel {
+  width: clamp(180px, 42%, 285px);
+  max-width: 52%;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 clamp(180px, 42%, 285px);
+  overflow: hidden;
+}
+
+.selector-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.selector-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 8px;
+  cursor: pointer;
+  min-width: 0;
+  min-height: 0;
+}
+
+.selector-item:hover {
+  background: rgba(0, 0, 128, 0.15);
+}
+
+.selector-item.is-active {
+  background: rgba(0, 0, 128, 0.2);
+  outline: 1px dotted #000;
+  outline-offset: -2px;
+}
+
+.selector-thumb {
+  width: 36px;
+  height: 36px;
+  display: block;
+  object-fit: contain;
+}
+
+.selector-thumb--pixelated {
+  image-rendering: pixelated;
+}
+
+.selector-title {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.selector-desc {
+  display: block;
+  font-size: 10px;
+  line-height: 1.3;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.viewer-panel {
+  flex: 1;
+  overflow: auto;
+  padding-bottom: 12px;
+}
+
+.viewer-content {
+  min-width: 0;
+}
+
+.viewer-content.is-hidden {
+  display: none;
+}
+
+.viewer-content h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.view-header {
+  margin-bottom: 12px;
+}
+
+.view-subtitle {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #333;
+}
+
+.panel-divider {
+  width: 5px;
+  height: 15%;
+  cursor: col-resize;
+  background: var(--button-shadow);
+  box-shadow: inset 1px 0 var(--button-highlight);
+  align-self: center;
+  touch-action: none;
+  flex: none;
+}
+
+.app-window.is-window-narrow .window-body {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-window.is-window-narrow .selector-panel {
+  flex: 0 0 clamp(128px, 36%, 220px);
+  max-height: none;
+  max-width: none;
+  min-height: 96px;
+  width: 100% !important;
+}
+
+.app-window.is-window-narrow .panel-divider {
+  display: none;
+}
+
+.app-window.is-window-narrow .viewer-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.app-window.is-window-short .selector-panel {
+  flex-basis: clamp(96px, 30%, 150px);
+  min-height: 84px;
+}
+
+/* Action rows (links and buttons under a heading). */
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 23px;
+  min-width: 75px;
+  padding: 0 12px;
+  background: var(--surface);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  color: inherit;
+  text-decoration: none;
+  font: inherit;
+  border: none;
+}
+
+.button-link:active {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+/* ---------------------------------------------------------------- carousel */
+
+.gallery-frame {
+  padding: var(--frame-padding);
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  margin-top: 12px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.gallery-frame:first-child {
+  margin-top: 0;
+}
+
+.gallery-scroll {
+  --gallery-height: clamp(180px, 34vh, 340px);
+  align-items: center;
+  background: #fff;
+  box-shadow: var(--border-field);
+  display: flex;
+  height: var(--gallery-height);
+  justify-content: center;
+  max-height: var(--gallery-height);
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--frame-inset);
+  position: relative;
+  width: 100%;
+}
+
+.gallery-scroll--video {
+  --gallery-height: clamp(220px, 40vh, 440px);
+  background: #000;
+}
+
+.gallery-scroll--pdf {
+  --gallery-height: clamp(220px, 44vh, 480px);
+}
+
+.gallery-scroll--poster {
+  --gallery-height: clamp(220px, 46vh, 460px);
+}
+
+.gallery-scroll--modeling {
+  --gallery-height: clamp(220px, 38vh, 360px);
+}
+
+/* "photo": a fixed aspect ratio box (e.g. About Me) instead of a fixed height. */
+.gallery-scroll--photo {
+  --gallery-height: auto;
+  aspect-ratio: var(--gallery-aspect, 4 / 3);
+  height: auto;
+  max-height: none;
+}
+
+.gallery-scroll img,
+.gallery-scroll video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+}
+
+.gallery-scroll video {
+  background: #000;
+}
+
+.gallery-scroll [hidden] {
+  display: none !important;
+}
+
+.gallery-empty {
+  align-items: center;
+  color: #555;
+  display: flex;
+  min-height: 100%;
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+}
+
+.gallery-controls {
+  align-items: center;
+  container-type: inline-size;
+  display: flex;
+  gap: var(--controls-gap);
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.gallery-controls button {
+  flex: 0 1 88px;
+  min-width: 72px;
+  overflow: hidden;
+  padding-left: 8px;
+  padding-right: 8px;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.gallery-counter {
+  align-items: center;
+  background: var(--surface);
+  box-shadow: var(--border-status-field);
+  display: inline-flex;
+  flex: 1 1 64px;
+  justify-content: center;
+  min-height: 21px;
+  min-width: 52px;
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+.gallery-caption {
+  margin: 8px 0 0;
+  font-weight: bold;
+}
+
+.gallery-caption:empty,
+.gallery-description:empty {
+  display: none;
+}
+
+.gallery-description {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+@container (max-width: 320px) {
+  .gallery-controls button {
+    flex-basis: 36px;
+    min-width: 36px;
+    font-size: 0;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .gallery-controls button::before {
+    content: attr(data-icon-label);
+    font-size: 13px;
+  }
+
+  .gallery-counter {
+    font-size: 9px;
+    min-width: 40px;
+  }
+}
+
+.app-window.is-window-expanded .gallery-scroll:not(.gallery-scroll--photo) {
+  --gallery-height: clamp(240px, 52vh, 620px);
+}
+
+/* Hourglass overlay while media loads (kit/media.js setLoading). */
+.media-loading {
+  align-items: center;
+  background: inherit;
+  display: flex;
+  inset: var(--frame-inset);
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.media-loading[hidden] {
+  display: none;
+}
+
+.media-loading__image {
+  width: auto;
+  height: min(100%, 136px);
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* A sunken frame that adopts its image's aspect ratio (data-fit-image-frame). */
+.image-fit-frame {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  display: flex;
+  max-width: 100%;
+  padding: var(--frame-padding);
+}
+
+.image-fit-slot {
+  align-items: center;
+  aspect-ratio: var(--image-fit-aspect, auto);
+  background: var(--image-fit-background, #fff);
+  box-shadow: var(--border-field);
+  display: flex;
+  flex: none;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--frame-inset);
+  width: 100%;
+}
+
+.image-fit-slot > img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------- calendar */
+
+.calendar-popout {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--taskbar-height) + 8px);
+  display: none;
+  max-width: calc(100vw - 24px);
+  z-index: 600;
+}
+
+.calendar-popout.is-open {
+  display: block;
+}
+
+.calendar-popout .window-body {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--window-gap);
+  max-height: calc(100vh - 92px);
+  max-height: calc(100dvh - 92px);
+  overflow: auto;
+}
+
+.calendar-panel,
+.clock-panel {
+  aspect-ratio: 1 / 1;
+  color: #000;
+  display: flex;
+  flex: 0 0 300px;
+  height: 300px;
+  max-width: 100%;
+  width: 300px;
+}
+
+.calendar-section,
+.clock-section {
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.calendar-section {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.calendar-section.has-background,
+.calendar-section.has-background .calendar-header,
+.calendar-section.has-background .calendar-day,
+.calendar-section.has-background .calendar-nav button {
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.calendar-section.has-background .calendar-day.is-muted {
+  color: #cfcfcf;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.calendar-month {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  font: inherit;
+  font-weight: bold;
+  color: inherit;
+  cursor: pointer;
+}
+
+.calendar-month:hover {
+  text-decoration: underline;
+}
+
+.calendar-nav {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.calendar-nav button {
+  width: 22px;
+  height: 22px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: var(--surface);
+  box-shadow: var(--border-raised-outer), var(--border-raised-inner);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.calendar-nav button:active {
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  flex: 1;
+  font-size: 11px;
+  min-height: 0;
+  text-align: center;
+}
+
+.calendar-day {
+  align-items: center;
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+}
+
+.calendar-day-label {
+  font-weight: bold;
+}
+
+.calendar-day.is-today {
+  border-color: #000;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #000;
+}
+
+.calendar-day.is-muted {
+  color: #666;
+}
+
+.calendar-day.is-event-day {
+  position: relative;
+  cursor: pointer;
+}
+
+.calendar-day.is-event-day::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 5px;
+  height: 5px;
+  background: #d6aa2e;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.calendar-day.is-event-day:hover,
+.calendar-day.is-event-day:focus-visible {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(247, 205, 74, 0.95);
+  box-shadow: 0 0 0 1px rgba(214, 170, 46, 0.9), 0 0 8px rgba(255, 210, 84, 0.35);
+  outline: none;
+}
+
+.clock-display {
+  background: #000;
+  color: #00ff66;
+  font-family: var(--font-digital);
+  font-size: 22px;
+  text-align: center;
+  width: 190px;
+  height: 44px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(0, 255, 102, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-colon.is-off {
+  opacity: 0.2;
+}
+
+.clock-frame {
+  padding: 6px;
+  background: var(--surface);
+  box-shadow: var(--border-sunken-outer), var(--border-sunken-inner);
+}
+
+.clock-slot-frame {
+  margin-bottom: 10px;
+}
+
+.clock-slot {
+  width: 190px;
+  height: 110px;
+  background: #000;
+  overflow: hidden;
+}
+
+.clock-slot img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.clock-slot img:not([src]) {
+  visibility: hidden;
+}
+
+.clock-quote {
+  margin: 10px 0 0;
+  font-size: 11px;
+  text-align: center;
+}
+
+.clock-quote:empty {
+  display: none;
+}
+
+.clock-section {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.calendar-divider {
+  width: 2px;
+  align-self: stretch;
+  background: var(--button-shadow);
+  box-shadow: inset 1px 0 var(--button-highlight);
+}
+
+.calendar-photo-window .system-alert-message {
+  display: none;
+}
+
+/* ------------------------------------------------------- small components */
+
+.icon-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.icon-list a,
+.icon-list .icon-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.icon-list img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.icon-list-title {
+  font-weight: bold;
+  display: block;
+}
+
+.icon-list-subtitle {
+  display: block;
+}
+
+/* --------------------------------------------------------------- responsive */
+
+@media (max-width: 680px) {
+  .calendar-popout {
+    --calendar-panel-size: min(300px, calc(100vw - 56px));
+    left: max(8px, env(safe-area-inset-left));
+    right: max(8px, env(safe-area-inset-right));
+    width: auto;
+  }
+
+  .calendar-popout .window-body {
+    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    max-height: calc(100vh - 84px);
+    max-height: calc(100dvh - 84px);
+  }
+
+  .calendar-panel,
+  .clock-panel {
+    flex: 0 0 var(--calendar-panel-size);
+    height: var(--calendar-panel-size);
+    width: var(--calendar-panel-size);
+  }
+
+  .calendar-grid {
+    gap: clamp(2px, 0.9vw, 4px);
+  }
+
+  .clock-display,
+  .clock-slot {
+    width: min(190px, calc(var(--calendar-panel-size) - 64px));
+  }
+
+  .calendar-divider {
+    height: 2px;
+    width: 100%;
+    align-self: auto;
+    box-shadow: inset 0 1px var(--button-highlight);
+  }
+}
+
+@media (max-width: 640px) {
+  .selector-window {
+    width: calc(100vw - 24px);
+    height: min(76vh, 640px);
+  }
+
+  .selector-window .window-body {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .selector-panel {
+    flex: 0 0 clamp(128px, 36%, 220px);
+    max-height: none;
+    max-width: none;
+    min-height: 96px;
+    width: 100% !important;
+  }
+
+  .panel-divider {
+    display: none;
+  }
+
+  .gallery-frame {
+    margin-top: 8px;
+  }
+
+  .gallery-scroll {
+    --gallery-height: clamp(160px, 32vh, 280px);
+  }
+
+  .gallery-scroll--poster,
+  .gallery-scroll--pdf,
+  .gallery-scroll--modeling {
+    --gallery-height: clamp(180px, 38vh, 340px);
+  }
+}
+
+@media (max-height: 560px) {
+  .gallery-scroll {
+    --gallery-height: clamp(140px, 32vh, 240px);
+  }
+
+  .gallery-scroll--poster,
+  .gallery-scroll--pdf,
+  .gallery-scroll--modeling {
+    --gallery-height: clamp(160px, 42vh, 300px);
+  }
+}
