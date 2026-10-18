@@ -8,6 +8,8 @@
 //     label: "About",                    // optional shorter desktop label (defaults to title)
 //     href: "https://…",                 // link app: opens a new tab instead of a window
 //     styles: ["apps/about/about.css"],  // optional stylesheets injected at boot
+//     window: false,                     // windowless app: onLaunch handles clicks (e.g. Neko)
+//     decorateLauncher(button) {},       // called for each desktop/dock button after render
 //     window: {                          // omitted for link apps
 //       width: 520,                      // CSS width in px, or a CSS length string
 //       className: "about-window",       // extra classes on the .window element
@@ -70,6 +72,10 @@ export const normalizeApp = (definition) => {
     throw new TypeError(`App ${id} styles must be an array of paths`);
   }
   const isLink = typeof definition.href === "string";
+  const windowless = definition.window === false;
+  if (windowless && typeof definition.onLaunch !== "function") {
+    throw new TypeError(`App ${id} has window: false and therefore needs an onLaunch handler`);
+  }
   const extraWindows = (definition.windows ?? []).map((extra) => {
     const extraId = assertString(extra.id, `App ${id} extra window id`);
     if (!ID_PATTERN.test(extraId)) {
@@ -93,12 +99,14 @@ export const normalizeApp = (definition) => {
     description: definition.description ?? "",
     href: isLink ? definition.href : null,
     styles: Object.freeze([...styles]),
-    window: isLink ? null : normalizeWindowOptions(definition.window, id),
+    window: isLink || windowless ? null : normalizeWindowOptions(definition.window, id),
     render: definition.render ?? (() => ""),
     mount: definition.mount ?? null,
+    decorateLauncher: typeof definition.decorateLauncher === "function" ? definition.decorateLauncher : null,
     hooks: pickHooks(definition),
     windows: Object.freeze(extraWindows),
     isLink,
+    hasWindow: !isLink && !windowless,
   });
 };
 

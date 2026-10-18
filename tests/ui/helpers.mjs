@@ -15,7 +15,7 @@ export const VIEWPORTS = Object.freeze({
  * `expectClean()` at the end of the test; it fails on any console error,
  * uncaught exception or failed request seen since the page opened.
  */
-export const openSite = async (page, { site = "showcase", hash = "" } = {}) => {
+export const openSite = async (page, { site = process.env.UI_TEST_SITE || "showcase", hash = "" } = {}) => {
   const problems = [];
   page.on("console", (message) => {
     if (message.type() === "error") problems.push(`console: ${message.text()}`);
