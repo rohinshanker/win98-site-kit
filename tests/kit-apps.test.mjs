@@ -36,6 +36,7 @@ test("ids, icons, styles and controls are validated", () => {
 test("extra windows are normalized and must not collide", () => {
   const app = normalizeApp({ ...minimal, windows: [{ id: "demo-rules", title: "Rules", onOpen() {} }] });
   assert.equal(app.windows[0].id, "demo-rules");
+  assert.equal(typeof normalizeApp({ ...minimal, onHelp() {} }).hooks.onHelp, "function");
   assert.equal(typeof app.windows[0].hooks.onOpen, "function");
   assert.throws(
     () => normalizeApps([{ ...minimal, windows: [{ id: "other", title: "x" }] }, { ...minimal, id: "other" }]),

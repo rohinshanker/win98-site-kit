@@ -183,6 +183,9 @@ const finishClose = (win) => {
   stopMedia(win);
   win.classList.remove("is-closing");
   win.classList.add("is-hidden");
+  // Fires once the element is actually hidden, whether or not the close
+  // animation ran (reduced motion skips it). Alerts use it to clean up.
+  win.dispatchEvent(new CustomEvent("kit:windowhidden"));
   const focusTarget = focusReturns.get(win);
   focusReturns.delete(win);
   const activeFocus = document.activeElement;
@@ -258,6 +261,7 @@ export const openWindow = (id) => {
   }
   win.classList.remove("is-hidden");
   win.setAttribute("aria-hidden", "false");
+  hooks.onBeforeOpen?.(win);
   resetToFirstTab(win);
   bringToFront(win);
   placeWindow(win, options);

@@ -12,8 +12,8 @@ npm run test:ui                     # Playwright, serves the repo root on UI_TES
 UI_TEST_PORT=4391 npm run test:ui   # second checkout or worktree
 ```
 
-`npm test` runs `tests/*.test.mjs`; package logic tests live in
-`tests/packages/*.test.mjs` and run with `node --test tests/packages/*.test.mjs`.
+`npm test` runs `tests/*.test.mjs` and the package logic tests in
+`tests/packages/*.test.mjs`.
 
 ## What each gate protects
 

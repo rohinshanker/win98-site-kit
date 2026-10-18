@@ -22,6 +22,8 @@
 //     render: () => "<p>window body HTML</p>",   // string, Node, or DocumentFragment
 //     mount(context) {},                 // once, after the window exists: { window, body, kit, app }
 //     onOpen(win) {}, onOpened(win) {}, onClose(win) {}, onAlreadyOpen(win) {},
+//     onHelp(win) {},                    // title-bar Help button pressed
+//     onBeforeOpen(win) {},              // window unhidden but not yet placed: fill content here
 //     onResize(win) {},                  // viewport resized while the window is visible
 //     onKeydown(event, win) {},          // keydown while the window is active; return true if handled
 //     onLaunch(event) {},                // intercept the icon click; return true to skip opening
@@ -120,6 +122,8 @@ const HOOK_NAMES = [
   "onLaunch",
   "onTabChange",
   "onDragEnd",
+  "onHelp",
+  "onBeforeOpen",
 ];
 
 const pickHooks = (definition) =>

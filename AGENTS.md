@@ -25,7 +25,7 @@ no build step: a site is plain HTML, CSS and ES modules served statically.
 ## Commands
 
 ```bash
-npm test                 # node --test tests/*.test.mjs
+npm test                 # node --test tests/*.test.mjs tests/packages/*.test.mjs
 npm run test:ui          # Playwright against showcase/ (needs npx playwright install chromium once)
 npm run showcase:build   # regenerate showcase/ from template + registry
 npm run check            # syntax + showcase freshness + node tests
@@ -51,7 +51,7 @@ export default {
   window: { width: 420, controls: ["minimize", "maximize", "close"], center: false, resizable: false, dialog: false },
   render: () => `<p>Hello</p>`,                  // window-body HTML (string, Node or fragment)
   mount({ window, body, kit, app, config }) {},  // once, after the element exists
-  onOpen(win) {}, onClose(win) {}, onResize(win) {}, onKeydown(event, win) {},
+  onBeforeOpen(win) {}, onOpen(win) {}, onClose(win) {}, onResize(win) {}, onKeydown(event, win) {}, onHelp(win) {},
   windows: [{ id: "my-app-rules", title: "Rules", window: {...}, render: () => "…" }],  // extra windows
 };
 ```

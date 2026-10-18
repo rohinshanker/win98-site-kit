@@ -51,7 +51,11 @@ for (const pkg of packages) {
       assert.ok((await stat(path.join(pkg.dir, file))).isFile());
     }
     const source = await readFile(path.join(pkg.dir, "apps", pkg.id, "index.js"), "utf8");
-    assert.match(source, new RegExp(`id:\\s*"${pkg.id}"`), "app definition id matches");
+    assert.match(
+      source,
+      new RegExp(`(?:id:\\s*|const [A-Z_]+ = )"${pkg.id}"`),
+      "app definition id matches (id: \"…\" or a const assigned the id)"
+    );
     assert.doesNotMatch(source, /window\.home[A-Z]/, "no personal-website globals remain");
     assert.doesNotMatch(source, /\bTODO\b|\bFIXME\b/, "no TODOs");
     for (const dependency of manifest.requires ?? []) {

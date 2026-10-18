@@ -55,7 +55,10 @@ const launch = (apps) => (appId, event, button) => {
     const win = kit.getWindow(app.id);
     kit.setFocusReturn(win, button);
     requestAnimationFrame(() => {
-      win.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR)?.focus({ preventScroll: true });
+      const body = win.querySelector(".window-body");
+      (body?.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR) || win.querySelector(kit.DIALOG_INITIAL_FOCUS_SELECTOR))?.focus({
+        preventScroll: true,
+      });
     });
   }
 };
@@ -102,7 +105,7 @@ export const boot = async () => {
   // Deep links: index.html#about opens that window on arrival.
   const openFromHash = () => {
     const id = window.location.hash.slice(1);
-    if (id && ids.includes(id) && !byId(id).isLink) openWindow(id);
+    if (id && ids.includes(id) && byId(id).hasWindow) openWindow(id);
   };
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
