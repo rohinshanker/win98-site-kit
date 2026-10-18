@@ -6,8 +6,9 @@ downloadable apps and games, with no build step and no backend. It is the
 reusable core of [rohin.shanker.me](https://rohin.shanker.me/), whose source
 lives at [rohinshanker/personal-website](https://github.com/rohinshanker/personal-website).
 
-**Showcase:** open `showcase/index.html` from a local server (see below) to
-see every app, game and component in one desktop.
+**Showcase:** [rohinshanker.github.io/win98-site-kit](https://rohinshanker.github.io/win98-site-kit/)
+shows every app, game and component in one desktop (or serve `showcase/`
+locally, see below).
 
 ## Quick start
 
